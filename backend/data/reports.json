@@ -481,5 +481,66 @@
     "verifiedBy": "commander@resqgrid.gov",
     "verifiedAt": "2026-08-30T12:56:40.966198+00:00",
     "verificationNote": "Verified and confirmed high-confidence by Authority"
+  },
+  {
+    "id": 9,
+    "userId": "citizen-22.25-live",
+    "hazardType": "Road Collapse",
+    "description": null,
+    "coordinates": {
+      "lat": 22.25208117606515,
+      "lng": 84.90476817591028
+    },
+    "victimCount": 5,
+    "metadata": {
+      "timestamp": "2026-08-30T13:57:17.518Z",
+      "cellTowerId": "AUTO",
+      "isLiveCapture": false,
+      "deviceId": "540e08db-f3d5-4f28-b9cd-2eb66dd0f0fd",
+      "sensorHash": "ee88b792fe6c7cae4ae63a798b3dec1282d66b7bb6acbc2fcac722837988249e",
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Road Collapse",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": true,
+      "analyzedAt": "2026-08-30T13:57:17.550622+00:00"
+    },
+    "riskScore": 3.22,
+    "trustScore": 95,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Serving carrier cell tower CELL-REG-2225-8490 handshake verified via regional network gateway.",
+      "sensorLocked": true,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T13:57:17.550975+00:00",
+    "clusterConsensus": {
+      "clusterSize": 1,
+      "uniqueDevices": 1,
+      "level": "L3_ISOLATED_PING",
+      "isElevated": false
+    },
+    "verifiedBy": "commander@resqgrid.gov",
+    "verifiedAt": "2026-08-30T14:00:06.018062+00:00"
   }
 ]

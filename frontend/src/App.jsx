@@ -24,7 +24,10 @@ function RoleSelect() {
     <div className="min-h-screen resq-landing px-5 py-6 sm:p-10" style={{ background: 'var(--ink)' }}>
       <div className="w-full max-w-6xl mx-auto">
         <header className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-2.5 text-white"><span className="w-8 h-8 rounded-lg flex items-center justify-center font-display font-bold" style={{ background: 'var(--signal)' }}>R</span><span className="font-display text-lg">ResQ<span style={{ color: 'var(--signal)' }}>-</span>Grid</span></div>
+          <div className="flex items-center gap-2.5 text-white">
+            <img src="/logo.png" alt="ResQ-Grid Logo" className="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-slate-700 shadow" />
+            <span className="font-display text-lg font-bold">ResQ<span style={{ color: 'var(--signal)' }}>-</span>Grid</span>
+          </div>
           <span className="text-xs sm:text-sm" style={{ color: 'var(--mist)' }}>Community emergency response</span>
         </header>
 

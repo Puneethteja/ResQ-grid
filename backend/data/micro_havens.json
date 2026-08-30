@@ -20,9 +20,9 @@
     "heartbeat_timestamp": "2026-08-30T12:25:39.993625+00:00",
     "verification_status": "ACTIVE",
     "arrival_devices": [
+      "dev-p1",
       "dev-p3",
-      "dev-p2",
-      "dev-p1"
+      "dev-p2"
     ]
   }
 ]

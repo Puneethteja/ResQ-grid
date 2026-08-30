@@ -230,5 +230,28 @@
       "note": "Verified and confirmed high-confidence by Authority"
     },
     "at": "2026-08-30T12:56:40.966211+00:00"
+  },
+  {
+    "id": 21,
+    "action": "REPORT_INGESTED",
+    "actor": "citizen-22.25-live",
+    "target": "9",
+    "details": {
+      "hazard": "Road Collapse",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T13:57:17.551364+00:00"
+  },
+  {
+    "id": 22,
+    "action": "REPORT_VERIFIED",
+    "actor": "commander@resqgrid.gov",
+    "target": "9",
+    "details": {
+      "note": null
+    },
+    "at": "2026-08-30T14:00:06.018106+00:00"
   }
 ]

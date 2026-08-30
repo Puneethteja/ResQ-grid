@@ -260,9 +260,7 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
 
         <header className="space-y-1.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow" style={{ background: isAuthority ? 'var(--signal)' : 'var(--safe)' }}>
-              <ShieldAlert size={20} />
-            </div>
+            <img src="/logo.png" alt="ResQ-Grid Logo" className="w-9 h-9 rounded-xl object-contain bg-slate-900 border border-slate-700 shadow" />
             <div>
               <h1 className="text-lg font-display font-semibold text-white">
                 {isSignUp ? `Register ${isAuthority ? 'Official Authority Officer' : 'Shelter Node'}` : title}

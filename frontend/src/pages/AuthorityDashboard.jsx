@@ -153,11 +153,9 @@ export default function AuthorityDashboard() {
         className="flex items-center justify-between px-5 py-2.5 shrink-0"
         style={{ borderBottom: '1px solid var(--ink-line)', background: 'var(--ink)' }}
       >
-        {}
+        {/* Brand & Context */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow" style={{ background: 'var(--signal)' }}>
-            <Flame size={18} />
-          </div>
+          <img src="/logo.png" alt="ResQ-Grid Logo" className="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-slate-700 shadow" />
           <div>
             <div className="flex items-center gap-2">
               <span className="font-display text-base font-bold text-white tracking-tight">

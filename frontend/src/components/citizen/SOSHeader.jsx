@@ -14,8 +14,11 @@ export default function SOSHeader({ status, nearestHazardKm, online }) {
       }}
     >
       <div className="flex items-center justify-between">
-        <div className="font-mono text-[11px] tracking-widest uppercase" style={{ color: 'var(--mist)' }}>
-          Citizen Safety Console
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="ResQ-Grid Logo" className="w-6 h-6 rounded-md object-contain bg-slate-900 border border-slate-700" />
+          <div className="font-mono text-[11px] tracking-widest uppercase text-white font-semibold">
+            Citizen Safety Console
+          </div>
         </div>
         <div className="flex items-center gap-1.5 font-mono text-[11px]" style={{ color: 'var(--mist)' }}>
           {online ? <Wifi size={13} /> : <WifiOff size={13} />}
