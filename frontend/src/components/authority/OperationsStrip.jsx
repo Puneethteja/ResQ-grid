@@ -19,7 +19,7 @@ export default function OperationsStrip({ overview }) {
               {label}
             </div>
             <div className="font-display text-lg font-bold text-white mt-0.5">
-              {overview?.[key] ?? '—'}
+              {overview?.[key] ?? 0}
             </div>
           </div>
         </div>

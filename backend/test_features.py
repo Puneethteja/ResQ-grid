@@ -37,6 +37,24 @@ def test_part1_feature1_citizen_reporting():
 
 def test_part1_feature3_and_part2_feature6_spatial_optimizer_and_multi_tier():
     """Part 1 Feature 3 & Part 2 Feature 6: Spatial Allocation Optimizer & Multi-Tier Routing."""
+    login_res = client.post("/api/auth/login", json={"email": "commander@resqgrid.gov", "password": "response2026", "role": "authority"})
+    assert login_res.status_code == 200
+    token = login_res.json()["token"]
+
+    shelter_login = client.post("/api/auth/login", json={"email": "shelter@resqgrid.gov", "password": "shelter2026", "role": "shelter"})
+    shelter_token = shelter_login.json()["token"]
+
+    # Register test shelter
+    client.post("/api/shelters", json={
+        "shelter_id": "SH-test-auto-01",
+        "name": "Auto Test Safe Shelter",
+        "coordinates": {"lat": 20.3010, "lng": 85.8200},
+        "current_occupancy": 10,
+        "max_capacity": 200,
+        "power_status": "ACTIVE",
+        "water_status": "ACTIVE",
+        "medical_status": "ACTIVE",
+    }, headers={"Authorization": f"Bearer {shelter_token}"})
 
     res = client.post("/api/allocation", json={"coordinates": {"lat": 20.3010, "lng": 85.8200}, "people": 2})
     assert res.status_code == 200
@@ -44,10 +62,6 @@ def test_part1_feature3_and_part2_feature6_spatial_optimizer_and_multi_tier():
     assert data["mode"] == "SHELTER"
     assert data["tier"] in [1, 2]
     assert data["distanceKm"] < 5.0
-
-    login_res = client.post("/api/auth/login", json={"email": "commander@resqgrid.gov", "password": "response2026", "role": "authority"})
-    assert login_res.status_code == 200
-    token = login_res.json()["token"]
 
     plan_res = client.post("/api/optimizer/plan", headers={"Authorization": f"Bearer {token}"})
     assert plan_res.status_code == 200
@@ -158,11 +172,30 @@ def test_part3_feature8_cell_tower_anti_spoofing():
 
 def test_part3_feature10_proximity_clustering_peer_consensus():
     """Part 3, Feature 10: Proximity Clustering & Peer-Mesh Consensus."""
+    # Post 2 proximity reports to form an emerging cluster
+    client.post("/api/reports", json={
+        "userId": "cluster-dev-1",
+        "hazardType": "Severe Flooding",
+        "description": "Flooding test pin 1",
+        "coordinates": {"lat": 20.2960, "lng": 85.8240},
+        "victimCount": 2,
+        "metadata": {"timestamp": "2026-08-29T16:00:00Z", "deviceId": "dev-c1", "cellTowerId": "CELL-OD-BBS-01", "channel": "APP"},
+    })
+    client.post("/api/reports", json={
+        "userId": "cluster-dev-2",
+        "hazardType": "Severe Flooding",
+        "description": "Flooding test pin 2",
+        "coordinates": {"lat": 20.2962, "lng": 85.8242},
+        "victimCount": 3,
+        "metadata": {"timestamp": "2026-08-29T16:01:00Z", "deviceId": "dev-c2", "cellTowerId": "CELL-OD-BBS-01", "channel": "APP"},
+    })
+
     res = client.get("/api/clusters")
     assert res.status_code == 200
     clusters = res.json()["clusters"]
     assert isinstance(clusters, list)
     assert len(clusters) > 0
+    assert clusters[0]["reportCount"] >= 2
 
 
 def test_part3_feature11_authority_audit_and_24h_blacklisting():

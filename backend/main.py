@@ -2,6 +2,7 @@ import math
 import os
 import re
 import gc
+import json
 import secrets
 import hashlib
 import hmac
@@ -26,60 +27,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+os.makedirs(DATA_DIR, exist_ok=True)
 
 reports_db: List[Dict[str, Any]] = []
 shelters_db: List[Dict[str, Any]] = []
 micro_havens_db: List[Dict[str, Any]] = []
 resources_db: List[Dict[str, Any]] = [
-    {
-        "id": "RESCUE-BOAT-01",
-        "name": "Odisha Quick Rescue Boat 1",
-        "kind": "BOAT",
-        "suitableHazards": ["Severe Flooding", "Waterlogging", "Tsunami", "Dam Breach"],
-        "coordinates": {"lat": 20.3001, "lng": 85.8245},
-        "available": True,
-        "capacity": 18,
-        "speedKmh": 35.0,
-        "assignedReportId": None,
-        "lastTelemetry": None,
-    },
-    {
-        "id": "MEDICAL-TEAM-02",
-        "name": "AIIMS Emergency Trauma Unit",
-        "kind": "MEDICAL",
-        "suitableHazards": ["Building Collapse", "Fire", "Landslide", "Structural Failure", "Medical Crisis"],
-        "coordinates": {"lat": 20.2910, "lng": 85.8320},
-        "available": True,
-        "capacity": 8,
-        "speedKmh": 50.0,
-        "assignedReportId": None,
-        "lastTelemetry": None,
-    },
-    {
-        "id": "DRONE-03",
-        "name": "AeroScan Thermal Recon Drone",
-        "kind": "DRONE",
-        "suitableHazards": ["Severe Flooding", "Fire", "Power Line Failure", "Landslide", "Trapped Citizens"],
-        "coordinates": {"lat": 20.3040, "lng": 85.8180},
-        "available": True,
-        "capacity": 2,
-        "speedKmh": 80.0,
-        "assignedReportId": None,
-        "lastTelemetry": None,
-    },
-    {
-        "id": "EXTR-TRUCK-04",
-        "name": "Amphibious Evacuation Unit",
-        "kind": "TRUCK",
-        "suitableHazards": ["Road Collapse", "Severe Flooding", "Landslide", "Obstruction", "Mass Evacuation"],
-        "coordinates": {"lat": 20.2850, "lng": 85.8450},
-        "available": True,
-        "capacity": 25,
-        "speedKmh": 45.0,
-        "assignedReportId": None,
-        "lastTelemetry": None,
-    },
+   
 ]
 
 team_telemetry_db: Dict[str, Dict[str, Any]] = {}
@@ -88,6 +43,144 @@ blacklist_db: Dict[str, Dict[str, Any]] = {}
 active_tokens: Dict[str, Dict[str, Any]] = {}  
 accounts_db: Dict[str, Dict[str, Any]] = {}
 gateway_inbox_db: List[Dict[str, Any]] = []
+
+def _serialize_shelter_for_json(s: Dict[str, Any]) -> Dict[str, Any]:
+    copy = dict(s)
+    if isinstance(copy.get("arrival_devices"), set):
+        copy["arrival_devices"] = list(copy["arrival_devices"])
+    return copy
+
+def _deserialize_shelter_from_json(s: Dict[str, Any]) -> Dict[str, Any]:
+    copy = dict(s)
+    if isinstance(copy.get("arrival_devices"), list):
+        copy["arrival_devices"] = set(copy["arrival_devices"])
+    elif copy.get("arrival_devices") is None:
+        copy["arrival_devices"] = set()
+    return copy
+
+def _serialize_blacklist_for_json(bl: Dict[str, Any]) -> Dict[str, Any]:
+    res = {}
+    for k, v in bl.items():
+        v_copy = dict(v)
+        if isinstance(v_copy.get("expires_at"), datetime):
+            v_copy["expires_at"] = v_copy["expires_at"].isoformat()
+        res[k] = v_copy
+    return res
+
+def _deserialize_blacklist_from_json(bl: Dict[str, Any]) -> Dict[str, Any]:
+    res = {}
+    for k, v in bl.items():
+        v_copy = dict(v)
+        if isinstance(v_copy.get("expires_at"), str):
+            try:
+                v_copy["expires_at"] = datetime.fromisoformat(v_copy["expires_at"])
+            except Exception:
+                pass
+        res[k] = v_copy
+    return res
+
+def save_all_to_disk():
+    try:
+        with open(os.path.join(DATA_DIR, "reports.json"), "w", encoding="utf-8") as f:
+            json.dump(reports_db, f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "shelters.json"), "w", encoding="utf-8") as f:
+            json.dump([_serialize_shelter_for_json(s) for s in shelters_db], f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "micro_havens.json"), "w", encoding="utf-8") as f:
+            json.dump([_serialize_shelter_for_json(s) for s in micro_havens_db], f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "resources.json"), "w", encoding="utf-8") as f:
+            json.dump(resources_db, f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "accounts.json"), "w", encoding="utf-8") as f:
+            json.dump(accounts_db, f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "audit_log.json"), "w", encoding="utf-8") as f:
+            json.dump(audit_log, f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "blacklist.json"), "w", encoding="utf-8") as f:
+            json.dump(_serialize_blacklist_for_json(blacklist_db), f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "team_telemetry.json"), "w", encoding="utf-8") as f:
+            json.dump(team_telemetry_db, f, indent=2, ensure_ascii=False)
+        with open(os.path.join(DATA_DIR, "gateway_inbox.json"), "w", encoding="utf-8") as f:
+            json.dump(gateway_inbox_db, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"[JSON Storage Warning] Failed to save state to disk: {e}")
+
+def load_all_from_disk() -> bool:
+    global reports_db, shelters_db, micro_havens_db, resources_db, accounts_db, audit_log, blacklist_db, team_telemetry_db, gateway_inbox_db
+    try:
+        r_file = os.path.join(DATA_DIR, "reports.json")
+        if os.path.exists(r_file):
+            with open(r_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    reports_db.clear()
+                    reports_db.extend(data)
+
+        s_file = os.path.join(DATA_DIR, "shelters.json")
+        if os.path.exists(s_file):
+            with open(s_file, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+                if raw:
+                    shelters_db.clear()
+                    shelters_db.extend([_deserialize_shelter_from_json(s) for s in raw])
+
+        m_file = os.path.join(DATA_DIR, "micro_havens.json")
+        if os.path.exists(m_file):
+            with open(m_file, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+                if raw:
+                    micro_havens_db.clear()
+                    micro_havens_db.extend([_deserialize_shelter_from_json(s) for s in raw])
+
+        res_file = os.path.join(DATA_DIR, "resources.json")
+        if os.path.exists(res_file):
+            with open(res_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    resources_db.clear()
+                    resources_db.extend(data)
+
+        acc_file = os.path.join(DATA_DIR, "accounts.json")
+        if os.path.exists(acc_file):
+            with open(acc_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    accounts_db.clear()
+                    accounts_db.update(data)
+
+        aud_file = os.path.join(DATA_DIR, "audit_log.json")
+        if os.path.exists(aud_file):
+            with open(aud_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    audit_log.clear()
+                    audit_log.extend(data)
+
+        bl_file = os.path.join(DATA_DIR, "blacklist.json")
+        if os.path.exists(bl_file):
+            with open(bl_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    blacklist_db.clear()
+                    blacklist_db.update(_deserialize_blacklist_from_json(data))
+
+        tel_file = os.path.join(DATA_DIR, "team_telemetry.json")
+        if os.path.exists(tel_file):
+            with open(tel_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    team_telemetry_db.clear()
+                    team_telemetry_db.update(data)
+
+        gw_file = os.path.join(DATA_DIR, "gateway_inbox.json")
+        if os.path.exists(gw_file):
+            with open(gw_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data:
+                    gateway_inbox_db.clear()
+                    gateway_inbox_db.extend(data)
+        
+        return bool(reports_db or shelters_db)
+    except Exception as e:
+        print(f"[JSON Storage Warning] Failed to load state from disk: {e}")
+        return False
 
 HAZARD_ALERT_RADIUS_KM = 5.0
 TEAM_HMAC_SECRET = os.environ.get("TEAM_HMAC_SECRET", "resqgrid-secret-telemetry-key-2026").encode()
@@ -99,14 +192,7 @@ AUTHORITY_ALLOWED_EMAILS = {email.strip().lower() for email in os.environ.get("A
 
 
 CELL_TOWER_REGISTRY = {
-    "CELL-OD-BBS-01": {"name": "Master Canteen Main Tower", "lac": "404-45-7801", "lat": 20.2960, "lng": 85.8240, "radiusKm": 3.8},
-    "CELL-OD-BBS-02": {"name": "Rajmahal Overpass Node", "lac": "404-45-7802", "lat": 20.2880, "lng": 85.8330, "radiusKm": 3.5},
-    "CELL-OD-BBS-03": {"name": "Kalinga Stadium Relay", "lac": "404-45-7803", "lat": 20.3150, "lng": 85.8300, "radiusKm": 4.0},
-    "CELL-OD-BBS-04": {"name": "Old Town Cultural Tower", "lac": "404-45-7804", "lat": 20.2450, "lng": 85.8350, "radiusKm": 3.5},
-    "CELL-OD-BBS-05": {"name": "AIIMS Medical Sector Relay", "lac": "404-45-7805", "lat": 20.2910, "lng": 85.8120, "radiusKm": 4.2},
-    "CELL-OD-BBS-09": {"name": "Bhubaneswar North Exchange", "lac": "404-45-7809", "lat": 20.3200, "lng": 85.8100, "radiusKm": 4.5},
-    "CELL-OD-BBS-14": {"name": "Janpath Commercial Hub", "lac": "404-45-7814", "lat": 20.2980, "lng": 85.8400, "radiusKm": 3.6},
-}
+   }
 
 
 def now_iso() -> str:
@@ -231,6 +317,7 @@ class RegisterRequest(BaseModel):
     name: str
     phone: str
     location: str
+    coordinates: Optional[Coordinates] = None
     designation: Optional[str] = None
     department: Optional[str] = None
     authority_id: Optional[str] = None
@@ -324,10 +411,7 @@ def verify_team_signature(team_id: str, status_val: str, timestamp_val: str, sig
 
 
 def validate_cell_tower_handshake(coords: Coordinates, tower_id: Optional[str], lac: Optional[str]) -> Dict[str, Any]:
-    """
-    Feature 8: Cross-references reported GPS coordinates against telecom metadata
-    (Cell Tower IDs / LAC handshakes) to detect and flag fake GPS spoofer apps.
-    """
+   
     if not tower_id or tower_id in {"AUTO", "UNKNOWN", "BROWSER-NETWORK-HANDSHAKE", "SIMULATED-TOWER", "CELL-AUTO"}:
         
         nearest_tower_id = None
@@ -480,11 +564,7 @@ def run_ai_image_analysis(photo: Optional[str], hazard_type: str, metadata: Meta
 
 
 def compute_spatial_clusters() -> List[Dict[str, Any]]:
-    """
-    Feature 10: Proximity Clustering & Peer-Mesh Consensus.
-    Groups incoming reports via spatial hashing (350m radius). Elevates multi-source clusters
-    (>= 3 unique devices) to High-Confidence Consensus (L1). Isolated reports sit in Low-Priority Queue (L3).
-    """
+   
     active_reports = [r for r in reports_db if r["trustStatus"] != "BLACKLISTED" and r.get("coordinates")]
     clusters: List[Dict[str, Any]] = []
     visited: Set[int] = set()
@@ -563,10 +643,7 @@ def compute_spatial_clusters() -> List[Dict[str, Any]]:
 
 
 def parse_emergency_text(text: str, default_coords: Optional[Coordinates] = None) -> Dict[str, Any]:
-    """
-    Feature 4: Ingests unstructured emergency texts from SMS / WhatsApp / IVR
-    and standardizes them into structured database entities.
-    """
+   
     cleaned = text.strip()
     hazard = "Severe Flooding"
     
@@ -618,8 +695,7 @@ def parse_emergency_text(text: str, default_coords: Optional[Coordinates] = None
 
 def require_account(authorization: Optional[str] = Header(default=None)) -> Dict[str, Any]:
     if not authorization or not authorization.startswith("Bearer "):
-        # Graceful fallback for authority dashboard access irrespective of stored credentials
-        return {
+         return {
             "email": "commander@resqgrid.gov",
             "name": "Command Administrator",
             "role": "authority",
@@ -642,8 +718,7 @@ def require_account(authorization: Optional[str] = Header(default=None)) -> Dict
 
 
 def require_authority(account: Dict[str, Any] = Depends(require_account)) -> Dict[str, Any]:
-    # Ensure any user accessing the authority dashboard has full operational authority
-    return account
+     return account
 
 
 def shelter_public(s: Dict[str, Any]) -> Dict[str, Any]:
@@ -694,6 +769,7 @@ def append_audit(action: str, actor: str, target: str, details: Optional[Dict[st
         "details": details or {},
         "at": now_iso(),
     })
+    save_all_to_disk()
 
 
 def is_blacklisted(identifier: Optional[str]) -> bool:
@@ -771,6 +847,7 @@ def register(payload: RegisterRequest):
         if not secrets.compare_digest(payload.verification_code, AUTHORITY_VERIFICATION_CODE):
             raise HTTPException(status_code=403, detail="Authority verification code could not be confirmed")
 
+    coords = payload.coordinates.dict() if payload.coordinates else {"lat": 20.2961, "lng": 85.8245}
     account = {
         "email": email,
         "password_hash": password_hash(payload.password),
@@ -778,7 +855,8 @@ def register(payload: RegisterRequest):
         "name": payload.name.strip(),
         "phone": payload.phone.strip(),
         "location": payload.location.strip(),
-        "designation": payload.designation.strip() if payload.designation else "Emergency Response Officer",
+        "coordinates": coords,
+        "designation": payload.designation.strip() if payload.designation else ("Disaster Incident Commander" if payload.role == "authority" else "Shelter Facility Manager"),
         "department": payload.department.strip() if payload.department else "Disaster Management & Relief",
         "authority_id": payload.authority_id.strip() if payload.authority_id else None,
         "verified": True,
@@ -787,7 +865,31 @@ def register(payload: RegisterRequest):
         "createdAt": now_iso(),
     }
     accounts_db[email] = account
-    append_audit("ACCOUNT_REGISTERED", email, payload.role, {"name": payload.name, "location": payload.location})
+
+    if payload.role == "shelter":
+        safe_prefix = re.sub(r'[^a-zA-Z0-9]', '', email.split('@')[0])[:10]
+        shelter_id = f"SH-{safe_prefix}-{len(shelters_db) + 1:02d}"
+        new_shelter = {
+            "shelter_id": shelter_id,
+            "name": payload.name.strip(),
+            "coordinates": coords,
+            "current_occupancy": 0,
+            "max_capacity": 300,
+            "power_status": "ACTIVE",
+            "water_status": "ACTIVE",
+            "medical_status": "ACTIVE",
+            "is_full": False,
+            "closed": False,
+            "tier": 1,
+            "verification_status": "PENDING_APPROVAL",
+            "heartbeat_timestamp": now_iso(),
+            "owner_email": email,
+            "verification_photo": None,
+            "arrival_devices": set(),
+        }
+        shelters_db.append(new_shelter)
+
+    append_audit("ACCOUNT_REGISTERED", email, payload.role, {"name": payload.name, "location": payload.location, "coordinates": coords})
     return issue_token(account)
 
 
@@ -1112,10 +1214,7 @@ def simulate_fallback_gateway(payload: FallbackSimulateRequest):
 
 @app.post("/api/route")
 def compute_route(payload: RouteRequest):
-    """
-    Feature 6: Multi-Tier Routing Optimizer.
-    Dynamically adjusts rescue path across Tier 1, Tier 2, and Tier 3 avoiding active hazard polygons.
-    """
+   
     start = payload.start
     dest = payload.destination
 
@@ -1155,10 +1254,7 @@ def compute_route(payload: RouteRequest):
 
 @app.post("/api/allocation")
 def allocate_resources(payload: AllocationRequest):
-    """
-    Feature 6 & 3: Multi-Tier Haven & Safety Allocator.
-    Tier 1 (Official Registered Shelters) -> Tier 2 (Verified Micro-Havens) -> Tier 3 (Shelter-in-Place & Mobile Extraction).
-    """
+    
     
     tier1_candidates = [
         s for s in shelters_db
@@ -1782,145 +1878,6 @@ def clear_all_logs(account: Dict[str, Any] = Depends(require_authority)):
 
 
 def init_seed_data():
-    if not shelters_db:
-        shelters_db.extend([
-            {
-                "shelter_id": "SH-bbsr-municipal-01",
-                "name": "Bhubaneswar Municipal Evacuation Center",
-                "coordinates": {"lat": 20.3020, "lng": 85.8190},
-                "current_occupancy": 64,
-                "max_capacity": 250,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "ACTIVE",
-                "is_full": False,
-                "closed": False,
-                "tier": 1,
-                "verification_status": "VERIFIED",
-                "heartbeat_timestamp": now_iso(),
-                "owner_email": "shelter-admin@bbsr.gov.in",
-                "verification_photo": generate_svg_data_url("Municipal Evacuation Center", "Tier-1 Civic Shelter Facility", "#10B981", "🏢"),
-                "arrival_devices": set(),
-            },
-            {
-                "shelter_id": "SH-bbsr-stadium-02",
-                "name": "Kalinga Relief Complex (Hall B)",
-                "coordinates": {"lat": 20.3150, "lng": 85.8310},
-                "current_occupancy": 120,
-                "max_capacity": 500,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "ACTIVE",
-                "is_full": False,
-                "closed": False,
-                "tier": 1,
-                "verification_status": "VERIFIED",
-                "heartbeat_timestamp": now_iso(),
-                "owner_email": "kalinga-shelter@bbsr.gov.in",
-                "verification_photo": generate_svg_data_url("Kalinga Relief Complex", "Multi-Hall Stadium Shelter", "#10B981", "🏟️"),
-                "arrival_devices": set(),
-            },
-            {
-                "shelter_id": "SH-unit8-cyclone-pending",
-                "name": "Unit-8 Community Refuge & Cyclone Hall",
-                "coordinates": {"lat": 20.2880, "lng": 85.8210},
-                "current_occupancy": 0,
-                "max_capacity": 450,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "LIMITED",
-                "is_full": False,
-                "closed": False,
-                "tier": 1,
-                "verification_status": "PENDING_APPROVAL",
-                "heartbeat_timestamp": now_iso(),
-                "owner_email": "unit8-manager@bbsr.gov.in",
-                "verification_photo": generate_svg_data_url("Unit-8 Shelter Refuge", "Reinforced 3-Story Concrete Hall", "#38BDF8", "🏫"),
-                "notes": "Structural audit complete; awaiting Authority Command Room sign-off.",
-                "arrival_devices": set(),
-            },
-            {
-                "shelter_id": "SH-patia-refuge-pending",
-                "name": "Patia North Multi-Purpose Refuge",
-                "coordinates": {"lat": 20.3550, "lng": 85.8150},
-                "current_occupancy": 0,
-                "max_capacity": 600,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "ACTIVE",
-                "is_full": False,
-                "closed": False,
-                "tier": 1,
-                "verification_status": "PENDING_APPROVAL",
-                "heartbeat_timestamp": now_iso(),
-                "owner_email": "patia-relief@bbsr.gov.in",
-                "verification_photo": generate_svg_data_url("Patia Refuge Complex", "High-Plinth Civic Shelter", "#F59E0B", "🏛️"),
-                "notes": "Emergency generator installed; awaiting flood-line clearance approval.",
-                "arrival_devices": set(),
-            },
-        ])
-
-    if not micro_havens_db:
-        micro_havens_db.extend([
-            {
-                "shelter_id": "MH-0001",
-                "name": "Shri Jagannath High-Plinth Community Hall",
-                "coordinates": {"lat": 20.2930, "lng": 85.8280},
-                "current_occupancy": 18,
-                "max_capacity": 60,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "LIMITED",
-                "is_full": False,
-                "closed": False,
-                "tier": 2,
-                "contact_name": "Priyabrata Mishra",
-                "contact_phone": "+91 94370 12345",
-                "notes": "Elevated 2nd floor hall with backup solar inverter & water filtration.",
-                "heartbeat_timestamp": now_iso(),
-                "verification_status": "ACTIVE",
-                "arrival_devices": {"dev-arr-1", "dev-arr-2", "dev-arr-3"},
-            },
-            {
-                "shelter_id": "MH-0002",
-                "name": "Bapuji Nagar Elevated Refuge Terrace",
-                "coordinates": {"lat": 20.2860, "lng": 85.8360},
-                "current_occupancy": 5,
-                "max_capacity": 40,
-                "power_status": "ACTIVE",
-                "water_status": "LIMITED",
-                "medical_status": "LIMITED",
-                "is_full": False,
-                "closed": False,
-                "tier": 2,
-                "contact_name": "Dr. Ananya Roy",
-                "contact_phone": "+91 98610 54321",
-                "notes": "Reinforced concrete flat roof with high parapet walls and tarp shelters.",
-                "heartbeat_timestamp": now_iso(),
-                "verification_status": "REGISTERED",
-                "arrival_devices": {"dev-arr-1"},
-            },
-            {
-                "shelter_id": "MH-0003",
-                "name": "Chandrasekharpur Multi-Story Haven",
-                "coordinates": {"lat": 20.3240, "lng": 85.8200},
-                "current_occupancy": 0,
-                "max_capacity": 90,
-                "power_status": "ACTIVE",
-                "water_status": "ACTIVE",
-                "medical_status": "LIMITED",
-                "is_full": False,
-                "closed": False,
-                "tier": 2,
-                "contact_name": "Ramesh Chandra Das",
-                "contact_phone": "+91 99371 99887",
-                "notes": "Commercial complex rooftop terrace with potable water overhead tank.",
-                "heartbeat_timestamp": now_iso(),
-                "verification_status": "REGISTERED",
-                "arrival_devices": set(),
-            },
-        ])
-
     accounts_db["commander@resqgrid.gov"] = {
         "email": "commander@resqgrid.gov",
         "password_hash": password_hash(AUTHORITY_PASSWORD),
@@ -1949,7 +1906,7 @@ def init_seed_data():
         "status": "STANDBY",
         "speedKmh": 0.0,
         "headingDeg": 180.0,
-        "batteryPercent": 98,
+        "batteryPercent": 100,
         "signed": True,
         "lastSeen": now_iso(),
     }
@@ -1963,284 +1920,12 @@ def init_seed_data():
         "signed": True,
         "lastSeen": now_iso(),
     }
-
-    if not reports_db:
-        # Seed realistic disaster reports for immediate authority inspection and action
-        seed_reports = [
-            {
-                "id": 1,
-                "userId": "citizen-bbsr-401",
-                "hazardType": "Severe Flooding",
-                "description": "Rapidly rising water depth (>4ft) at Master Canteen Square. Ground floor shops flooded, 4 families stranded on bus stop roof.",
-                "coordinates": {"lat": 20.2961, "lng": 85.8245},
-                "victimCount": 4,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-01",
-                    "isLiveCapture": True,
-                    "deviceId": "dev-bbsr-alpha-101",
-                    "phoneNumber": "+91 94371 00101",
-                    "sensorHash": "sha256-sensor-lock-401",
-                    "captureHash": "sha256-cam-seal-401",
-                    "channel": "APP",
-                },
-                "photo": generate_svg_data_url("SEVERE FLOODING", "Master Canteen Junction • 4ft Depth", "#EF4444", "🌊"),
-                "aiAnalysis": {
-                    "hasImage": True,
-                    "confidence": 94,
-                    "detectedHazard": "Severe Flooding",
-                    "detectedFeatures": ["Submerged roadway pattern", "Reflective water-depth signature", "Live sensor lock intact"],
-                    "recommendation": "VERIFY_RECOMMENDED",
-                    "authenticityScore": 94,
-                    "liveProofMatched": True,
-                    "sensorHashValid": True,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 4.5,
-                "trustScore": 95,
-                "trustStatus": "VERIFIED",
-                "imageVerificationStatus": "VERIFIED",
-                "verification": {
-                    "liveCapture": True,
-                    "cellTowerValidated": True,
-                    "isSpoofed": False,
-                    "towerDetails": "Serving cell tower CELL-OD-BBS-01 (Master Canteen Main Tower) matched within 0.12 km coverage.",
-                    "sensorLocked": True,
-                    "aiConfidence": 94,
-                    "channel": "APP",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-            {
-                "id": 2,
-                "userId": "sms-943709",
-                "hazardType": "Severe Flooding",
-                "description": "[SMS Gateway from +919437098888] Waterlogging blocking road near Master Canteen side alley. 2 people need evacuation.",
-                "coordinates": {"lat": 20.2970, "lng": 85.8250},
-                "victimCount": 2,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-01",
-                    "isLiveCapture": False,
-                    "deviceId": "sms-phone-943709",
-                    "phoneNumber": "+91 94370 98888",
-                    "channel": "SMS",
-                },
-                "photo": None,
-                "aiAnalysis": {
-                    "hasImage": False,
-                    "confidence": 80,
-                    "detectedHazard": "Severe Flooding",
-                    "detectedFeatures": ["SMS fallback channel", "Serving cell tower matched"],
-                    "recommendation": "VERIFY_RECOMMENDED",
-                    "authenticityScore": 80,
-                    "liveProofMatched": False,
-                    "sensorHashValid": False,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 4.2,
-                "trustScore": 88,
-                "trustStatus": "VERIFIED",
-                "imageVerificationStatus": "VERIFIED",
-                "verification": {
-                    "liveCapture": False,
-                    "cellTowerValidated": True,
-                    "isSpoofed": False,
-                    "towerDetails": "Carrier cell tower CELL-OD-BBS-01 handshake verified via SMS telecom relay.",
-                    "sensorLocked": False,
-                    "aiConfidence": 80,
-                    "channel": "SMS",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-            {
-                "id": 3,
-                "userId": "wa-986101",
-                "hazardType": "Severe Flooding",
-                "description": "[WhatsApp Cloud API from +919861012222] Heavy inundation around Station Square. Water entering residential ground floor.",
-                "coordinates": {"lat": 20.2955, "lng": 85.8240},
-                "victimCount": 3,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-01",
-                    "isLiveCapture": False,
-                    "deviceId": "wa-phone-986101",
-                    "phoneNumber": "+91 98610 12222",
-                    "channel": "WHATSAPP",
-                },
-                "photo": None,
-                "aiAnalysis": {
-                    "hasImage": False,
-                    "confidence": 85,
-                    "detectedHazard": "Severe Flooding",
-                    "detectedFeatures": ["WhatsApp location match", "Multi-device peer consensus"],
-                    "recommendation": "VERIFY_RECOMMENDED",
-                    "authenticityScore": 85,
-                    "liveProofMatched": False,
-                    "sensorHashValid": False,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 4.4,
-                "trustScore": 92,
-                "trustStatus": "VERIFIED",
-                "imageVerificationStatus": "VERIFIED",
-                "verification": {
-                    "liveCapture": False,
-                    "cellTowerValidated": True,
-                    "isSpoofed": False,
-                    "towerDetails": "Serving cell tower CELL-OD-BBS-01 validated via WhatsApp GPS tag.",
-                    "sensorLocked": False,
-                    "aiConfidence": 85,
-                    "channel": "WHATSAPP",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-            {
-                "id": 4,
-                "userId": "citizen-bbsr-502",
-                "hazardType": "Road Collapse",
-                "description": "Massive road fissure on Janpath overpass after drainage rupture. Dangerous sinkhole opening in middle lane.",
-                "coordinates": {"lat": 20.2880, "lng": 85.8330},
-                "victimCount": 5,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-02",
-                    "isLiveCapture": True,
-                    "deviceId": "dev-bbsr-beta-202",
-                    "phoneNumber": "+91 94372 00202",
-                    "sensorHash": "sha256-sensor-lock-502",
-                    "captureHash": "sha256-cam-seal-502",
-                    "channel": "APP",
-                },
-                "photo": generate_svg_data_url("ROAD COLLAPSE", "Janpath Overpass Fissure • Sinkhole", "#F59E0B", "🚧"),
-                "aiAnalysis": {
-                    "hasImage": True,
-                    "confidence": 91,
-                    "detectedHazard": "Road Collapse",
-                    "detectedFeatures": ["Pavement structural fracture", "Debris scatter zone", "Live sensor stream verified"],
-                    "recommendation": "VERIFY_RECOMMENDED",
-                    "authenticityScore": 91,
-                    "liveProofMatched": True,
-                    "sensorHashValid": True,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 4.1,
-                "trustScore": 86,
-                "trustStatus": "PENDING",
-                "imageVerificationStatus": "PENDING_REVIEW",
-                "verification": {
-                    "liveCapture": True,
-                    "cellTowerValidated": True,
-                    "isSpoofed": False,
-                    "towerDetails": "Serving cell tower CELL-OD-BBS-02 (Rajmahal Overpass Node) matched within 0.25 km.",
-                    "sensorLocked": True,
-                    "aiConfidence": 91,
-                    "channel": "APP",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-            {
-                "id": 5,
-                "userId": "citizen-bbsr-603",
-                "hazardType": "Power Line Failure",
-                "description": "High-voltage 11kV distribution transformer exploded and live cables fallen across waterlogged street near AIIMS sector.",
-                "coordinates": {"lat": 20.2910, "lng": 85.8120},
-                "victimCount": 1,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-05",
-                    "isLiveCapture": True,
-                    "deviceId": "dev-bbsr-gamma-303",
-                    "phoneNumber": "+91 94373 00303",
-                    "sensorHash": "sha256-sensor-lock-603",
-                    "captureHash": "sha256-cam-seal-603",
-                    "channel": "APP",
-                },
-                "photo": generate_svg_data_url("POWER LINE FAILURE", "11kV Live Cable Down • AIIMS Sector", "#EAB308", "⚡"),
-                "aiAnalysis": {
-                    "hasImage": True,
-                    "confidence": 88,
-                    "detectedHazard": "Power Line Failure",
-                    "detectedFeatures": ["Detached high-voltage cabling", "Ground contact electrical hazard", "Hardware sensor verified"],
-                    "recommendation": "VERIFY_RECOMMENDED",
-                    "authenticityScore": 88,
-                    "liveProofMatched": True,
-                    "sensorHashValid": True,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 3.8,
-                "trustScore": 82,
-                "trustStatus": "PENDING",
-                "imageVerificationStatus": "PENDING_REVIEW",
-                "verification": {
-                    "liveCapture": True,
-                    "cellTowerValidated": True,
-                    "isSpoofed": False,
-                    "towerDetails": "Serving cell tower CELL-OD-BBS-05 (AIIMS Medical Sector Relay) matched at 0.18 km.",
-                    "sensorLocked": True,
-                    "aiConfidence": 88,
-                    "channel": "APP",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-            {
-                "id": 6,
-                "userId": "spoofer-bot-999",
-                "hazardType": "Fire",
-                "description": "Fake fire report injected from virtual emulator without authentic cell tower handshake.",
-                "coordinates": {"lat": 20.4500, "lng": 85.9500},
-                "victimCount": 1,
-                "metadata": {
-                    "timestamp": now_iso(),
-                    "cellTowerId": "CELL-OD-BBS-01",
-                    "isLiveCapture": False,
-                    "deviceId": "spoofer-device-999",
-                    "phoneNumber": "+91 90000 00000",
-                    "channel": "APP",
-                },
-                "photo": None,
-                "aiAnalysis": {
-                    "hasImage": False,
-                    "confidence": 20,
-                    "detectedHazard": "Fire",
-                    "detectedFeatures": ["No photo evidence", "Anomalous telecom mismatch"],
-                    "recommendation": "UNVERIFIED_STATIC_MEDIA",
-                    "authenticityScore": 20,
-                    "liveProofMatched": False,
-                    "sensorHashValid": False,
-                    "analyzedAt": now_iso(),
-                },
-                "riskScore": 0.5,
-                "trustScore": 10,
-                "trustStatus": "REJECTED",
-                "imageVerificationStatus": "REJECTED",
-                "verification": {
-                    "liveCapture": False,
-                    "cellTowerValidated": False,
-                    "isSpoofed": True,
-                    "towerDetails": "ADVERSARIAL SPOOFING DETECTED: Reported GPS is 21.4 km away from serving cell tower CELL-OD-BBS-01 (Maximum RF coverage: 3.8 km).",
-                    "sensorLocked": False,
-                    "aiConfidence": 20,
-                    "channel": "APP",
-                },
-                "assignedTeam": None,
-                "dispatchedAt": None,
-                "createdAt": now_iso(),
-            },
-        ]
-        reports_db.extend(seed_reports)
-        compute_spatial_clusters()
+    save_all_to_disk()
 
 
-init_seed_data()
+load_all_from_disk()
+if not accounts_db:
+    init_seed_data()
+save_all_to_disk()
+compute_spatial_clusters()
 

@@ -1,0 +1,16 @@
+[
+  {
+    "channel": "SMS",
+    "sender": "+919437099999",
+    "raw": "SOS FLOOD Master Canteen square 20.2961, 85.8245 6 people trapped",
+    "reportId": 2,
+    "at": "2026-08-30T12:25:39.970752+00:00"
+  },
+  {
+    "channel": "WHATSAPP",
+    "sender": "+919861011111",
+    "raw": "EMERGENCY: Building Collapse near Rajmahal [20.2885, 85.8330] 3 people",
+    "reportId": 3,
+    "at": "2026-08-30T12:25:39.977272+00:00"
+  }
+]

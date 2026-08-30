@@ -1,0 +1,28 @@
+[
+  {
+    "shelter_id": "MH-0001",
+    "name": "Test High Roof Community Hall",
+    "coordinates": {
+      "lat": 20.29,
+      "lng": 85.82
+    },
+    "current_occupancy": 3,
+    "max_capacity": 50,
+    "power_status": "ACTIVE",
+    "water_status": "ACTIVE",
+    "medical_status": "LIMITED",
+    "is_full": false,
+    "closed": false,
+    "tier": 2,
+    "contact_name": "Mr. Das",
+    "contact_phone": "+919437000000",
+    "notes": "Sturdy concrete roof",
+    "heartbeat_timestamp": "2026-08-30T12:25:39.993625+00:00",
+    "verification_status": "ACTIVE",
+    "arrival_devices": [
+      "dev-p3",
+      "dev-p2",
+      "dev-p1"
+    ]
+  }
+]

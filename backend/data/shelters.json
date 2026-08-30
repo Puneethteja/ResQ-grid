@@ -1,0 +1,25 @@
+[
+  {
+    "shelter_id": "SH-test-auto-01",
+    "name": "Auto Test Safe Shelter",
+    "coordinates": {
+      "lat": 20.301,
+      "lng": 85.82
+    },
+    "current_occupancy": 10,
+    "max_capacity": 200,
+    "power_status": "ACTIVE",
+    "water_status": "ACTIVE",
+    "medical_status": "ACTIVE",
+    "is_full": false,
+    "closed": false,
+    "tier": 1,
+    "verification_status": "VERIFIED",
+    "heartbeat_timestamp": "2026-08-30T12:25:39.951290+00:00",
+    "owner_email": "shelter@resqgrid.gov",
+    "verification_photo": null,
+    "arrival_devices": [],
+    "verifiedBy": "puneethdarisi2008@gmail.com",
+    "verifiedAt": "2026-08-30T12:30:19.622190+00:00"
+  }
+]

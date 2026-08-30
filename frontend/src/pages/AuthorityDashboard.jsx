@@ -115,7 +115,9 @@ export default function AuthorityDashboard() {
     navigate('/authority/auth', { replace: true })
   }
 
-  const pendingMediaCount = overview?.pendingReviewCount ?? 0
+  const pendingReportsCount = reports.filter((r) => r.trustStatus === 'PENDING' || r.imageVerificationStatus === 'PENDING_REVIEW').length
+  const pendingSheltersCount = shelters.filter((s) => s.verificationStatus === 'PENDING_APPROVAL' || s.verificationStatus === 'REGISTERED' || s.verificationStatus === 'PENDING').length
+  const pendingMediaCount = overview?.pendingReviewCount ?? (pendingReportsCount + pendingSheltersCount)
 
   const hazardZones = [
     ...clusters

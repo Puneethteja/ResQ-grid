@@ -1,0 +1,485 @@
+[
+  {
+    "id": 1,
+    "userId": "citizen-unit-test-1",
+    "hazardType": "Severe Flooding",
+    "description": "Flash flooding on Janpath near Master Canteen",
+    "coordinates": {
+      "lat": 20.2961,
+      "lng": 85.8245
+    },
+    "victimCount": 4,
+    "metadata": {
+      "timestamp": "2026-08-29T16:00:00Z",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": true,
+      "deviceId": "dev-test-1001",
+      "sensorHash": "abc123sensorhash",
+      "captureHash": "def456capturehash",
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Severe Flooding",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": true,
+      "analyzedAt": "2026-08-30T12:25:39.939215+00:00"
+    },
+    "riskScore": 4.75,
+    "trustScore": 95,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": true,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 0.05 km (within 3.8 km radius).",
+      "sensorLocked": true,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:39.939368+00:00",
+    "clusterConsensus": {
+      "clusterSize": 4,
+      "uniqueDevices": 4,
+      "level": "L1_VERIFIED_CONSENSUS",
+      "isElevated": true
+    }
+  },
+  {
+    "id": 2,
+    "userId": "sms-099999",
+    "hazardType": "Severe Flooding",
+    "description": "[SMS Fallback Gateway] SOS FLOOD Master Canteen square 20.2961, 85.8245 6 people trapped",
+    "coordinates": {
+      "lat": 20.2961,
+      "lng": 85.8245
+    },
+    "victimCount": 6,
+    "metadata": {
+      "timestamp": "2026-08-30T12:25:39.966042+00:00",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": false,
+      "deviceId": "sms-dev-099999",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "SMS",
+      "phoneNumber": "+919437099999"
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Severe Flooding",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:39.966102+00:00"
+    },
+    "riskScore": 2.75,
+    "trustScore": 90,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 0.05 km (within 3.8 km radius).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "SMS"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:39.966157+00:00",
+    "clusterConsensus": {
+      "clusterSize": 4,
+      "uniqueDevices": 4,
+      "level": "L1_VERIFIED_CONSENSUS",
+      "isElevated": true
+    }
+  },
+  {
+    "id": 3,
+    "userId": "whatsapp-011111",
+    "hazardType": "Building Collapse",
+    "description": "[WHATSAPP Fallback Gateway] EMERGENCY: Building Collapse near Rajmahal [20.2885, 85.8330] 3 people",
+    "coordinates": {
+      "lat": 20.2885,
+      "lng": 85.833
+    },
+    "victimCount": 3,
+    "metadata": {
+      "timestamp": "2026-08-30T12:25:39.973775+00:00",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": false,
+      "deviceId": "whatsapp-dev-011111",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "WHATSAPP",
+      "phoneNumber": "+919861011111"
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Building Collapse",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:39.973830+00:00"
+    },
+    "riskScore": 0.5,
+    "trustScore": 15,
+    "trustStatus": "REJECTED",
+    "imageVerificationStatus": "REJECTED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 1.26 km (within 3.8 km radius).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "WHATSAPP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:39.973888+00:00",
+    "clusterConsensus": {
+      "clusterSize": 1,
+      "uniqueDevices": 1,
+      "level": "L3_ISOLATED_PING",
+      "isElevated": false
+    },
+    "verifiedBy": "puneethdarisi2008@gmail.com",
+    "verifiedAt": "2026-08-30T12:30:08.371180+00:00"
+  },
+  {
+    "id": 4,
+    "userId": "citizen-spoofer-app",
+    "hazardType": "Fire",
+    "description": "Fake fire report from spoofed coordinates",
+    "coordinates": {
+      "lat": 20.45,
+      "lng": 85.95
+    },
+    "victimCount": 1,
+    "metadata": {
+      "timestamp": "2026-08-29T16:00:00Z",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": false,
+      "deviceId": "spoofer-dev-999",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Fire",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:40.008259+00:00"
+    },
+    "riskScore": 0.0,
+    "trustScore": 0,
+    "trustStatus": "BLACKLISTED",
+    "imageVerificationStatus": "BLACKLISTED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": false,
+      "isSpoofed": true,
+      "towerDetails": "ADVERSARIAL SPOOFING DETECTED: Reported GPS is 21.6 km away from serving cell tower CELL-OD-BBS-01 (Maximum RF coverage: 3.8 km).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:40.008310+00:00",
+    "clusterConsensus": {
+      "clusterSize": 1,
+      "uniqueDevices": 1,
+      "level": "L3_ISOLATED_PING",
+      "isElevated": false
+    },
+    "verifiedBy": "puneethdarisi2008@gmail.com",
+    "verifiedAt": "2026-08-30T12:30:04.175726+00:00"
+  },
+  {
+    "id": 5,
+    "userId": "cluster-dev-1",
+    "hazardType": "Severe Flooding",
+    "description": "Flooding test pin 1",
+    "coordinates": {
+      "lat": 20.296,
+      "lng": 85.824
+    },
+    "victimCount": 2,
+    "metadata": {
+      "timestamp": "2026-08-29T16:00:00Z",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": true,
+      "deviceId": "dev-c1",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Severe Flooding",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:40.014849+00:00"
+    },
+    "riskScore": 2.75,
+    "trustScore": 90,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 0.00 km (within 3.8 km radius).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:40.014903+00:00",
+    "clusterConsensus": {
+      "clusterSize": 4,
+      "uniqueDevices": 4,
+      "level": "L1_VERIFIED_CONSENSUS",
+      "isElevated": true
+    }
+  },
+  {
+    "id": 6,
+    "userId": "cluster-dev-2",
+    "hazardType": "Severe Flooding",
+    "description": "Flooding test pin 2",
+    "coordinates": {
+      "lat": 20.2962,
+      "lng": 85.8242
+    },
+    "victimCount": 3,
+    "metadata": {
+      "timestamp": "2026-08-29T16:01:00Z",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": true,
+      "deviceId": "dev-c2",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Severe Flooding",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:40.022292+00:00"
+    },
+    "riskScore": 2.75,
+    "trustScore": 90,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 0.03 km (within 3.8 km radius).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:40.022345+00:00",
+    "clusterConsensus": {
+      "clusterSize": 4,
+      "uniqueDevices": 4,
+      "level": "L1_VERIFIED_CONSENSUS",
+      "isElevated": true
+    }
+  },
+  {
+    "id": 7,
+    "userId": "prankster-101",
+    "hazardType": "Severe Flooding",
+    "description": "Prank report to be blacklisted",
+    "coordinates": {
+      "lat": 20.2961,
+      "lng": 85.8245
+    },
+    "victimCount": 1,
+    "metadata": {
+      "timestamp": "2026-08-29T16:00:00Z",
+      "cellTowerId": "CELL-OD-BBS-01",
+      "isLiveCapture": true,
+      "deviceId": "prank-device-777",
+      "sensorHash": null,
+      "captureHash": null,
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": "+919999900000"
+    },
+    "photo": null,
+    "aiAnalysis": {
+      "hasImage": false,
+      "confidence": 40,
+      "detectedHazard": "Severe Flooding",
+      "detectedFeatures": [
+        "Text report only",
+        "No image telemetry supplied"
+      ],
+      "recommendation": "MANUAL_REVIEW_REQUIRED",
+      "authenticityScore": 40,
+      "liveProofMatched": false,
+      "sensorHashValid": false,
+      "analyzedAt": "2026-08-30T12:25:40.033009+00:00"
+    },
+    "riskScore": 0.0,
+    "trustScore": 0,
+    "trustStatus": "BLACKLISTED",
+    "imageVerificationStatus": "BLACKLISTED",
+    "verification": {
+      "liveCapture": false,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Cell tower handshake verified: Master Canteen Main Tower at 0.05 km (within 3.8 km radius).",
+      "sensorLocked": false,
+      "aiConfidence": 40,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:25:40.033065+00:00",
+    "clusterConsensus": {
+      "clusterSize": 5,
+      "uniqueDevices": 5,
+      "level": "L1_VERIFIED_CONSENSUS",
+      "isElevated": true
+    },
+    "verifiedBy": "commander@resqgrid.gov",
+    "verifiedAt": "2026-08-30T12:25:40.041205+00:00"
+  },
+  {
+    "id": 8,
+    "userId": "citizen-22.25-live",
+    "hazardType": "Road Collapse",
+    "description": null,
+    "coordinates": {
+      "lat": 22.253088177612863,
+      "lng": 84.90870300996224
+    },
+    "victimCount": 5,
+    "metadata": {
+      "timestamp": "2026-08-30T12:55:52.769Z",
+      "cellTowerId": "AUTO",
+      "isLiveCapture": true,
+      "deviceId": "540e08db-f3d5-4f28-b9cd-2eb66dd0f0fd",
+      "sensorHash": "a9450acd5a767b0460dada1f0de63380d0d5c4d127dafab1f02f9cc0cdaf3dad",
+      "captureHash": "4864580f904a72352d96fbcca78369569bef021697198c9988c675b6f7ade66b",
+      "networkLac": null,
+      "channel": "APP",
+      "phoneNumber": null
+    },
+    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBgUFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0QGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBj/wAARCAHgAoADASIAAhEBAxEB/8QAHQABAAMBAQEBAQEAAAAAAAAAAAUGBwQDAQIICf/EADEQAQACAgICAgEDAwMEAgMAAAABAgMEBREGEhMhMQcUQRUiMhYzUSNCYYEXJFJicf/EABkBAQADAQEAAAAAAAAAAAAAAAACAwQBBf/EADIRAQEAAgEDAgMGBQUBAQAAAAABAhEDBCExEkEFMlEGE0JhcZEUIlKh0RWBseHwFsH/2gAMAwEAAhEDEQA/AP8AP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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",
+    "aiAnalysis": {
+      "hasImage": true,
+      "confidence": 95,
+      "detectedHazard": "Road Collapse",
+      "detectedFeatures": [
+        "Pavement structural fracture",
+        "Debris scatter zone",
+        "Live sensor stream SHA-256 integrity verified",
+        "Hardware tamper-resistant sensor lock intact"
+      ],
+      "recommendation": "VERIFY_RECOMMENDED",
+      "authenticityScore": 95,
+      "liveProofMatched": true,
+      "sensorHashValid": true,
+      "analyzedAt": "2026-08-30T12:55:52.783818+00:00"
+    },
+    "riskScore": 5.8,
+    "trustScore": 99,
+    "trustStatus": "VERIFIED",
+    "imageVerificationStatus": "VERIFIED",
+    "verification": {
+      "liveCapture": true,
+      "cellTowerValidated": true,
+      "isSpoofed": false,
+      "towerDetails": "Serving carrier cell tower CELL-REG-2225-8490 handshake verified via regional network gateway.",
+      "sensorLocked": true,
+      "aiConfidence": 95,
+      "channel": "APP"
+    },
+    "assignedTeam": null,
+    "dispatchedAt": null,
+    "createdAt": "2026-08-30T12:55:52.793592+00:00",
+    "clusterConsensus": {
+      "clusterSize": 1,
+      "uniqueDevices": 1,
+      "level": "L3_ISOLATED_PING",
+      "isElevated": false
+    },
+    "verifiedBy": "commander@resqgrid.gov",
+    "verifiedAt": "2026-08-30T12:56:40.966198+00:00",
+    "verificationNote": "Verified and confirmed high-confidence by Authority"
+  }
+]

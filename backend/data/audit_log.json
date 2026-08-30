@@ -1,0 +1,234 @@
+[
+  {
+    "id": 1,
+    "action": "REPORT_INGESTED",
+    "actor": "citizen-unit-test-1",
+    "target": "1",
+    "details": {
+      "hazard": "Severe Flooding",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 95
+    },
+    "at": "2026-08-30T12:25:39.939393+00:00"
+  },
+  {
+    "id": 2,
+    "action": "SHELTER_REGISTERED",
+    "actor": "shelter@resqgrid.gov",
+    "target": "SH-test-auto-01",
+    "details": {
+      "name": "Auto Test Safe Shelter",
+      "capacity": 200
+    },
+    "at": "2026-08-30T12:25:39.951304+00:00"
+  },
+  {
+    "id": 3,
+    "action": "REPORT_INGESTED",
+    "actor": "sms-099999",
+    "target": "2",
+    "details": {
+      "hazard": "Severe Flooding",
+      "channel": "SMS",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T12:25:39.966187+00:00"
+  },
+  {
+    "id": 4,
+    "action": "REPORT_INGESTED",
+    "actor": "whatsapp-011111",
+    "target": "3",
+    "details": {
+      "hazard": "Building Collapse",
+      "channel": "WHATSAPP",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T12:25:39.973919+00:00"
+  },
+  {
+    "id": 5,
+    "action": "MICRO_HAVEN_REGISTERED",
+    "actor": "public",
+    "target": "MH-0001",
+    "details": {
+      "name": "Test High Roof Community Hall",
+      "capacity": 50
+    },
+    "at": "2026-08-30T12:25:39.979831+00:00"
+  },
+  {
+    "id": 6,
+    "action": "MICRO_HAVEN_AUTO_PROMOTED",
+    "actor": "geofence_consensus",
+    "target": "MH-0001",
+    "details": {
+      "name": "Test High Roof Community Hall",
+      "arrivalCount": 3
+    },
+    "at": "2026-08-30T12:25:39.993633+00:00"
+  },
+  {
+    "id": 7,
+    "action": "TEAM_TELEMETRY_SIGNED",
+    "actor": "RESCUE-BOAT-01",
+    "target": "RESCUE-BOAT-01",
+    "details": {
+      "status": "EN_ROUTE"
+    },
+    "at": "2026-08-30T12:25:40.001134+00:00"
+  },
+  {
+    "id": 8,
+    "action": "REPORT_INGESTED",
+    "actor": "citizen-spoofer-app",
+    "target": "4",
+    "details": {
+      "hazard": "Fire",
+      "channel": "APP",
+      "isSpoofed": true,
+      "trustScore": 10
+    },
+    "at": "2026-08-30T12:25:40.008357+00:00"
+  },
+  {
+    "id": 9,
+    "action": "REPORT_INGESTED",
+    "actor": "cluster-dev-1",
+    "target": "5",
+    "details": {
+      "hazard": "Severe Flooding",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T12:25:40.014955+00:00"
+  },
+  {
+    "id": 10,
+    "action": "REPORT_INGESTED",
+    "actor": "cluster-dev-2",
+    "target": "6",
+    "details": {
+      "hazard": "Severe Flooding",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T12:25:40.022395+00:00"
+  },
+  {
+    "id": 11,
+    "action": "REPORT_INGESTED",
+    "actor": "prankster-101",
+    "target": "7",
+    "details": {
+      "hazard": "Severe Flooding",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 55
+    },
+    "at": "2026-08-30T12:25:40.033123+00:00"
+  },
+  {
+    "id": 12,
+    "action": "REPORT_BLACKLISTED_24H",
+    "actor": "commander@resqgrid.gov",
+    "target": "7",
+    "details": {
+      "deviceId": "prank-device-777",
+      "phone": "+919999900000",
+      "note": "Prank spam"
+    },
+    "at": "2026-08-30T12:25:40.041221+00:00"
+  },
+  {
+    "id": 13,
+    "action": "IDENTIFIER_UNBANNED",
+    "actor": "commander@resqgrid.gov",
+    "target": "prank-device-777",
+    "details": {},
+    "at": "2026-08-30T12:25:40.054445+00:00"
+  },
+  {
+    "id": 14,
+    "action": "ACCOUNT_REGISTERED",
+    "actor": "puneethdarisi2008@gmail.com",
+    "target": "authority",
+    "details": {
+      "name": "puneeth",
+      "location": "rourkela, odisha"
+    },
+    "at": "2026-08-30T12:29:29.920647+00:00"
+  },
+  {
+    "id": 15,
+    "action": "REPORT_BLACKLISTED_24H",
+    "actor": "puneethdarisi2008@gmail.com",
+    "target": "4",
+    "details": {
+      "deviceId": "spoofer-dev-999",
+      "phone": "citizen-spoofer-app",
+      "note": "Prank / Adversarial alert confirmed by Authority"
+    },
+    "at": "2026-08-30T12:30:04.175748+00:00"
+  },
+  {
+    "id": 16,
+    "action": "REPORT_REJECTED",
+    "actor": "puneethdarisi2008@gmail.com",
+    "target": "3",
+    "details": {
+      "note": null
+    },
+    "at": "2026-08-30T12:30:08.371194+00:00"
+  },
+  {
+    "id": 17,
+    "action": "SHELTER_VERIFIED",
+    "actor": "puneethdarisi2008@gmail.com",
+    "target": "SH-test-auto-01",
+    "details": {
+      "action": "REJECT",
+      "notes": null
+    },
+    "at": "2026-08-30T12:30:09.403897+00:00"
+  },
+  {
+    "id": 18,
+    "action": "SHELTER_VERIFIED",
+    "actor": "puneethdarisi2008@gmail.com",
+    "target": "SH-test-auto-01",
+    "details": {
+      "action": "VERIFY",
+      "notes": null
+    },
+    "at": "2026-08-30T12:30:19.622205+00:00"
+  },
+  {
+    "id": 19,
+    "action": "REPORT_INGESTED",
+    "actor": "citizen-22.25-live",
+    "target": "8",
+    "details": {
+      "hazard": "Road Collapse",
+      "channel": "APP",
+      "isSpoofed": false,
+      "trustScore": 99
+    },
+    "at": "2026-08-30T12:55:52.793813+00:00"
+  },
+  {
+    "id": 20,
+    "action": "REPORT_VERIFIED",
+    "actor": "commander@resqgrid.gov",
+    "target": "8",
+    "details": {
+      "note": "Verified and confirmed high-confidence by Authority"
+    },
+    "at": "2026-08-30T12:56:40.966211+00:00"
+  }
+]

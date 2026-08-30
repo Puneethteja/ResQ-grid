@@ -1,0 +1,17 @@
+{
+  "+919999900000": {
+    "expires_at": "2026-08-31T12:25:40.041214+00:00",
+    "reason": "Prank spam",
+    "banned_by": "commander@resqgrid.gov"
+  },
+  "spoofer-dev-999": {
+    "expires_at": "2026-08-31T12:30:04.175736+00:00",
+    "reason": "Prank / Adversarial alert confirmed by Authority",
+    "banned_by": "puneethdarisi2008@gmail.com"
+  },
+  "citizen-spoofer-app": {
+    "expires_at": "2026-08-31T12:30:04.175736+00:00",
+    "reason": "Prank / Adversarial alert confirmed by Authority",
+    "banned_by": "puneethdarisi2008@gmail.com"
+  }
+}

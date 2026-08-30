@@ -2,145 +2,140 @@
 
 > **Multi-Tier Disaster Response, Spatial Resource Optimization & Adversarial Ingestion Verification Platform**
 
-ResQ-Grid is an enterprise-grade emergency response and disaster coordination ecosystem designed to operate reliably during severe crisis events, network degradation, and high-concurrency situations.
+ResQ-Grid is a full-spectrum disaster coordination and crisis response platform engineered to operate reliably during severe emergency scenarios, network degradation, and high-concurrency events.
 
-The platform unifies **citizen hazard reporting**, **multi-tier refuge management**, **spatial allocation solvers**, **multi-channel offline gateways** (SMS, WhatsApp, IVR), and a **Restricted Authority Command Room** equipped with telecom anti-spoofing verification engines.
-
----
-
-## 🌟 Key Features
-
-### 1. 📲 Citizen Emergency Reporting Portal
-- **Interactive Geo-Tagging**: Precise GPS coordinate detection with manual pin adjustments.
-- **Live Hardware Evidence Camera**: Captures incident evidence sealed with device accelerometer/orientation sensors and SHA-256 cryptographic watermarks.
-- **Trapped Citizen Quantifier**: Quantifies affected victims to prioritize rescue dispatch.
-- **Offline Mesh Resilience**: Caches emergency reports locally during cellular outages and transmits via fallback gateways.
-
-### 2. 🛡️ Adversarial-Proof Verification & Anti-Spoofing Engine
-- **Telecom Cell-Tower RF Handshake**: Cross-references reported GPS coordinates against carrier cell tower registries to detect and auto-reject fake GPS spoofer apps.
-- **Cryptographic & AI Photo Authenticity**: Computer-vision analysis checks for live sensor locks. Static, unverified, or fake photos are assigned low confidence (~40%) and flagged for mandatory manual authority review.
-- **Peer-Mesh Proximity Clustering**: Automatically groups reports within a 350m spatial radius into consensus clusters. Clusters with $\ge 3$ unique devices are automatically elevated to **L1 Verified Consensus**.
-- **24-Hour Instant Blacklisting**: Blocks adversarial devices and phone numbers from spamming emergency queues.
-
-### 3. 🧩 Spatial Resource & Multi-Tier Shelter Allocation Optimizer
-- **Automated Spatial Pairing**: Solver matrix pairs crisis zones with specialized extraction assets (Quick Rescue Boats, Medical Trauma Units, Recon Drones, Amphibious Evacuation Trucks).
-- **ETA & Capacity Solver**: Computes real-time ETAs and directs evacuees to optimal Tier 1 municipal shelters or Tier 2 community micro-havens.
-- **1-Click Batch Dispatch**: Allows incident commanders to execute multi-unit dispatch plans simultaneously.
-
-### 4. 🏥 Multi-Tier Safe Refuge & Shelter Management
-- **Tier 1 Municipal Shelters**: Real-time occupancy tracking, infrastructure heartbeat panels (power, water, medical supplies), and panic toggles.
-- **Tier 2 Community Micro-Havens**: Crowdsourced refuge discovery, geofenced arrival pings, and auto-promotion workflows.
-
-### 5. 📻 Multi-Channel Fallback Telecom Gateway
-- **NLP Ingestion Pipeline**: Ingests unstructured emergency texts from **SMS**, **WhatsApp**, and **IVR Voice** calls, parsing hazard categories, landmark text, and coordinates into structured database records.
-
-### 6. 🎛️ Authority Command Room Dashboard
-- **Live Interactive Map**: Layered view displaying incident pins, shelter occupancy meters, consensus cluster polygons, and real-time hazard heatmaps.
-- **Triage Sidebar & Verification Hub**: Real-time queue for reviewing high-resolution media, cell tower handshakes, and AI confidence scores.
-- **HMAC-Signed Field Telemetry**: Audit log tracking field rescue unit locations secured via HMAC-SHA256 signatures.
+The platform provides a **Citizen Emergency Reporting App**, a **Live Authority Command Room with Heatmaps**, a **Multi-Tier Spatial Allocation Solver Matrix**, an **SMS & WhatsApp Fallback Webhook Pipeline**, a **Crowdsourced Micro-Haven Network**, and an **Adversarial-Proof Anti-Spoofing Verification Engine**.
 
 ---
 
-## 🏗️ Tech Stack
+## 🌟 Full 11-Feature Platform Architecture
 
-### **Frontend**
-- **Framework**: React 18 (Vite)
-- **Styling**: Tailwind CSS, Custom CSS Variables
-- **Icons**: Lucide React
-- **Routing**: React Router DOM v6
-- **Build Tool**: Vite (Rolldown engine)
-
-### **Backend**
-- **Framework**: Python 3.14 (FastAPI)
-- **Validation**: Pydantic v2
-- **Cryptography**: HMAC-SHA256, PBKDF2-HMAC-SHA256, SHA-256 Data Seals
-- **Testing**: FastAPI TestClient, Pytest runner
+### **Part 1: The Core Foundation**
+1. **Citizen Reporting App (`/citizen`)**:
+   - Droppable geo-tagged pins with exact GPS coordinates and district sector presets.
+   - Emergency descriptions, victim quantifier, and live camera evidence capture sealed with hardware sensor hashes.
+2. **Live Authority Dashboard with Heatmaps (`/authority`)**:
+   - Control room interface with a tactical Leaflet MasterMap, dynamic crisis density heatmaps, and live incident triage feeds.
+3. **Resource & Shelter Allocation Optimizer (`/authority` -> Spatial Optimizer)**:
+   - Spatial solver matrix pairing specialized rescue units (Rescue Boats, Trauma Units, Recon Drones, Amphibious Trucks) with high-priority crisis zones.
+4. **SMS & WhatsApp Multi-Channel Fallback Pipeline (`/citizen` & `/api/gateway/simulate`)**:
+   - Webhook gateways ingesting WhatsApp Business Cloud API and Twilio SMS/IVR text messages into structured database records.
 
 ---
 
-## 📁 Repository Structure
+### **Part 2: Dynamic Resource & Haven Safety-Net**
+5. **Crowdsourced Micro-Haven Mapper**:
+   - Community-registered dry roofs, reinforced halls, and temples with an automated **$150\,\text{m}$ Geofence Arrival Engine** that auto-promotes havens to `ACTIVE` once $\ge 3$ devices check in.
+6. **Multi-Tier Routing Optimizer**:
+   - Dynamically routes evacuees across **Tier 1** (Official Municipal Shelters), **Tier 2** (Verified Micro-Havens), and **Tier 3** (Shelter-in-Place on high ground with automated Mobile Extraction Unit dispatch).
+7. **Active Resource Verification Loop**:
+   - Automated 15-minute shelter capacity/power heartbeats and HMAC-SHA256 cryptographically signed field rescue team telemetry.
+
+---
+
+### **Part 3: Adversarial-Proof Verification Engine**
+8. **Network Handshake & Cell-Tower Validation**:
+   - Cross-references reported GPS coordinates against carrier cell tower registries (`CELL-OD-BBS-01`, etc.) to detect and flag fake GPS spoofer apps.
+9. **Live-Only Metadata Hashing & Sensor Locking**:
+   - Enforces live camera capture while extracting SHA-256 hashes of timestamp, device ID, gyroscope, and orientation sensors to block static or stock photo uploads.
+10. **Proximity Clustering & Peer-Mesh Consensus**:
+    - Groups incoming pins within a $350\,\text{m}$ radius. Multi-source clusters ($\ge 3$ unique devices) auto-elevate to **L1 Verified Consensus** ($\ge 90\%$ trust) with dashed boundary polygons on the MasterMap.
+11. **Authority Audit Trail & Instant Blacklisting**:
+    - Displays an automated **Trust Score Badge** on every alert and empowers officials to instantly blacklist malicious device identifiers and phone numbers for **24 hours**.
+
+---
+
+## 💾 Data Persistence (JSON Storage)
+
+All backend database collections are persisted to `.json` files inside `backend/data/`:
+- `reports.json` — Citizen hazard reports & complaints
+- `shelters.json` — Tier 1 registered municipal shelters
+- `micro_havens.json` — Tier 2 crowdsourced community safe zones
+- `resources.json` — Rescue assets (Boats, Ambulances, Drones, Trucks)
+- `accounts.json` — Authorized command personnel & shelter managers
+- `audit_log.json` — Cryptographic operational audit trails
+- `blacklist.json` — 24-hour banned devices & phone numbers
+- `team_telemetry.json` — HMAC-signed rescue team positions
+- `gateway_inbox.json` — Raw SMS / WhatsApp inbound messages
+
+All mutations are automatically committed to disk, ensuring complete state persistence across server restarts.
+
+---
+
+## 📁 Repository Structure & File Guide
 
 ```
 ResQgrid/
 ├── backend/
-│   ├── main.py              # FastAPI application server, database models, AI & verification engine
-│   ├── run_tests.py         # End-to-end 11-feature automated test suite runner
-│   ├── test_features.py     # Comprehensive test suites for all 11 core features
-│   └── requirements.txt     # Python dependencies
+│   ├── data/                 # Persistent JSON database storage
+│   ├── main.py               # FastAPI application server & verification engine
+│   ├── run_tests.py          # 11-feature automated test suite runner
+│   ├── test_features.py      # Test cases for all 11 core features
+│   └── requirements.txt      # Python dependencies
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # React modular components
-│   │   │   ├── authority/   # AdminVerificationHub, AuditTelemetryView, IncidentDetailModal, etc.
-│   │   │   ├── citizen/     # CameraCapture, ReportForm, SOSHeader, OfflineDrawer, etc.
-│   │   │   ├── map/         # MasterMap, HeatmapLayer
-│   │   │   └── shelter/     # CapacityMeter, HeartbeatPanel, MicroHavenForm, ThreatRadar, etc.
-│   │   ├── lib/             # API client (api.js), session management (authoritySession.js)
-│   │   ├── pages/           # CitizenPortal, AuthorityDashboard, ShelterPortal, AuthPortal
-│   │   ├── App.jsx          # Route definitions
-│   │   └── main.jsx         # Application entry point
+│   │   ├── components/       # Modular UI components (authority, citizen, map, shelter)
+│   │   ├── lib/              # API client & session helpers
+│   │   ├── pages/            # CitizenPortal, AuthorityDashboard, ShelterPortal, AuthPortal
+│   │   ├── App.jsx           # Routing & route guards
+│   │   └── main.jsx          # React entry point
 │   ├── package.json
 │   └── vite.config.js
-└── README.md
+├── .gitignore                # Clean GitHub ignore configuration
+└── README.md                 # Project documentation
+```
+
+### ❓ What are `scratch` and `run_tests` files?
+- **`scratch/` Directory (Temporary / Cleaned)**: 
+  `scratch/` folders contain temporary ad-hoc developer test scripts used during active feature development (e.g. `debug_queue.py`, `test_endpoints.py`). They are **not needed for production** and are safely removed and excluded by `.gitignore`.
+- **`run_tests.py` & `test_features.py` (Mandatory Test Suite)**:
+  `run_tests.py` is the automated end-to-end test runner that validates all 11 platform features (health checks, citizen reporting, spatial optimization, cell tower validation, HMAC signatures, etc.). **Keep these files** in the repo for CI/CD pipelines, automated testing, and regression verification.
+
+---
+
+## ⚡ Quickstart & Setup
+
+### **Prerequisites**
+- **Node.js** v18+ & **npm** v9+
+- **Python** 3.10+
+
+---
+
+### **1. Backend Server**
+```bash
+cd backend
+pip install -r requirements.txt
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+To run the automated verification test suite:
+```bash
+python backend/run_tests.py
 ```
 
 ---
 
-## ⚡ Getting Started
+### **2. Frontend Web Application**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### **Prerequisites**
-- **Node.js**: v18.0.0 or higher
-- **Python**: v3.10 or higher
-- **npm**: v9.0.0 or higher
-
----
-
-### **1. Backend Setup & Launch**
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Launch the FastAPI server:
-   ```bash
-   python main.py
-   ```
-   The backend API will start at `http://localhost:8000`. Swagger documentation is available at `http://localhost:8000/docs`.
-
-4. Run the automated 11-feature test suite:
-   ```bash
-   python run_tests.py
-   ```
+To build for production:
+```bash
+npm run build
+```
 
 ---
 
-### **2. Frontend Setup & Launch**
+## 🔐 Default Access Portals & Credentials
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install Node dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-   The application will be available at `http://localhost:5173`.
-
-4. Build for production:
-   ```bash
-   npm run build
-   ```
+| Role / Portal | Route | Default Identifier | Access Code / Password |
+|---|---|---|---|
+| **Citizen Reporting App** | `/citizen` | *No login required* | Open Access |
+| **Authority Command Room** | `/authority/auth` | `commander@resqgrid.gov` | `response2026` |
+| **Shelter Management Node** | `/shelter/auth` | `shelter@resqgrid.gov` | `shelter2026` |
 
 ---
 
