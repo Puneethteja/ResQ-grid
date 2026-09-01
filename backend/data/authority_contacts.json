@@ -6,7 +6,7 @@
     "phone_number": "1078",
     "is_sms_gateway_active": true,
     "priority": 1,
-    "createdAt": "2026-09-01T19:04:17.235079+00:00"
+    "createdAt": "2026-09-01T19:34:45.678341+00:00"
   },
   {
     "contact_id": "CNT-ODRAF-01",
@@ -15,7 +15,7 @@
     "phone_number": "1070",
     "is_sms_gateway_active": true,
     "priority": 2,
-    "createdAt": "2026-09-01T19:04:17.235083+00:00"
+    "createdAt": "2026-09-01T19:34:45.678345+00:00"
   },
   {
     "contact_id": "CNT-FIRE-01",
@@ -24,7 +24,7 @@
     "phone_number": "101",
     "is_sms_gateway_active": true,
     "priority": 3,
-    "createdAt": "2026-09-01T19:04:17.235086+00:00"
+    "createdAt": "2026-09-01T19:34:45.678347+00:00"
   },
   {
     "contact_id": "CNT-SEOC-01",
@@ -33,7 +33,7 @@
     "phone_number": "1077",
     "is_sms_gateway_active": true,
     "priority": 4,
-    "createdAt": "2026-09-01T19:04:17.235089+00:00"
+    "createdAt": "2026-09-01T19:34:45.678348+00:00"
   },
   {
     "contact_id": "CNT-DEOC-01",
@@ -42,7 +42,7 @@
     "phone_number": "+916742540112",
     "is_sms_gateway_active": true,
     "priority": 5,
-    "createdAt": "2026-09-01T19:04:17.235092+00:00"
+    "createdAt": "2026-09-01T19:34:45.678350+00:00"
   },
   {
     "contact_id": "CNT-AMB-01",
@@ -51,7 +51,7 @@
     "phone_number": "108",
     "is_sms_gateway_active": false,
     "priority": 6,
-    "createdAt": "2026-09-01T19:04:17.235095+00:00"
+    "createdAt": "2026-09-01T19:34:45.678353+00:00"
   },
   {
     "contact_id": "CNT-POL-01",
@@ -60,6 +60,6 @@
     "phone_number": "112",
     "is_sms_gateway_active": true,
     "priority": 7,
-    "createdAt": "2026-09-01T19:04:17.235098+00:00"
+    "createdAt": "2026-09-01T19:34:45.678355+00:00"
   }
 ]
