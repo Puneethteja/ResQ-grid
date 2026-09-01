@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { AlertTriangle, ShieldCheck, MapPin, Radio, Flame, Droplets, Zap } from 'lucide-react'
 import { fetchReports } from '../../lib/api.js'
-
 export default function ThreatRadar({ shelterCoords }) {
   const [hazards, setHazards] = useState([])
-
   async function loadData() {
     try {
       const allReports = await fetchReports()
@@ -15,13 +13,11 @@ export default function ThreatRadar({ shelterCoords }) {
     } catch {
     }
   }
-
   useEffect(() => {
     loadData()
     const timer = setInterval(loadData, 3000)
     return () => clearInterval(timer)
   }, [])
-
   return (
     <div
       className="rounded-xl p-5 space-y-3 shadow-sm"
@@ -38,11 +34,9 @@ export default function ThreatRadar({ shelterCoords }) {
           <ShieldCheck size={12} /> Sync Active
         </span>
       </div>
-
       <p className="text-xs" style={{ color: 'var(--mist)' }}>
         Live emergency conditions broadcast by district command within evacuation radius:
       </p>
-
       {hazards.length === 0 ? (
         <div className="p-3 rounded-lg text-center text-xs font-mono" style={{ background: 'var(--ink)', color: 'var(--safe)' }}>
           ✓ No active threat zones within shelter safety perimeter.
@@ -72,7 +66,6 @@ export default function ThreatRadar({ shelterCoords }) {
                   </div>
                 )}
               </div>
-
               <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-950 text-red-300 border border-red-800 shrink-0">
                 ACTIVE HAZARD
               </span>

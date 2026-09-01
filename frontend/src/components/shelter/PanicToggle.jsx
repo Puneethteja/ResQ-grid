@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { AlertOctagon, X, RotateCcw } from 'lucide-react'
-
 export default function PanicToggle({ closed, onSetClosed }) {
   const [confirming, setConfirming] = useState(false)
-
   if (closed) return (
     <div className="rounded-lg p-4" style={{ background: 'var(--hazard-dim)', border: '1px solid var(--hazard)' }}>
       <p className="font-display font-semibold text-white">Shelter closed to routing</p>
@@ -11,7 +9,6 @@ export default function PanicToggle({ closed, onSetClosed }) {
       <button onClick={() => onSetClosed(false)} className="mt-3 w-full rounded-md py-2.5 font-medium text-white flex items-center justify-center gap-2" style={{ background: 'var(--safe)' }}><RotateCcw size={16} /> Reopen shelter</button>
     </div>
   )
-
   if (confirming) {
     return (
       <div className="rounded-lg p-4 space-y-3" style={{ background: 'var(--hazard-dim)', border: '1px solid var(--hazard)' }}>
@@ -40,7 +37,6 @@ export default function PanicToggle({ closed, onSetClosed }) {
       </div>
     )
   }
-
   return (
     <button
       onClick={() => setConfirming(true)}

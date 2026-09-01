@@ -13,7 +13,6 @@ import {
   Clock,
 } from 'lucide-react'
 import { fetchOperationsOverview, fetchResources, fetchBlacklist, unbanIdentifier, clearAuditLogs } from '../../lib/api.js'
-
 export default function AuditTelemetryView() {
   const [overview, setOverview] = useState(null)
   const [resources, setResources] = useState([])
@@ -22,7 +21,6 @@ export default function AuditTelemetryView() {
   const [unbanning, setUnbanning] = useState(null)
   const [clearing, setClearing] = useState(false)
   const [feedback, setFeedback] = useState('')
-
   const loadData = useCallback(async () => {
     try {
       const [ov, res, bl] = await Promise.all([
@@ -38,19 +36,16 @@ export default function AuditTelemetryView() {
       setLoading(false)
     }
   }, [])
-
   useEffect(() => {
     loadData()
     const t = setInterval(loadData, 4000)
     return () => clearInterval(t)
   }, [loadData])
-
   async function handleClearLogs() {
     if (!window.confirm('Clear all past audit log entries and free system & web memory?')) return
     setClearing(true)
     try {
       await clearAuditLogs()
-      // Free web browser caches / unused storage
       if (window.caches) {
         const cacheKeys = await window.caches.keys()
         await Promise.all(cacheKeys.map((key) => window.caches.delete(key)))
@@ -64,7 +59,6 @@ export default function AuditTelemetryView() {
       setClearing(false)
     }
   }
-
   async function handleUnban(identifier) {
     setUnbanning(identifier)
     try {
@@ -76,12 +70,9 @@ export default function AuditTelemetryView() {
       setUnbanning(null)
     }
   }
-
   const auditEvents = overview?.auditEvents || []
-
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--ink)' }}>
-      {/* Header */}
       <div
         className="p-5 flex flex-wrap items-center justify-between gap-3 shrink-0"
         style={{ borderBottom: '1px solid var(--ink-line)', background: 'var(--ink-raised)' }}
@@ -119,14 +110,11 @@ export default function AuditTelemetryView() {
           </button>
         </div>
       </div>
-
       <div className="flex-1 overflow-y-auto p-5 grid lg:grid-cols-3 gap-5">
-        {/* Col 1: Cryptographically Signed Rescue Teams (Feature 7) */}
         <div className="space-y-4">
           <h3 className="font-display text-sm font-semibold text-white flex items-center gap-2">
             <Truck size={16} style={{ color: 'var(--signal)' }} /> Field Extraction Teams (HMAC Signed)
           </h3>
-
           <div className="space-y-3">
             {resources.map((r) => (
               <div
@@ -146,7 +134,6 @@ export default function AuditTelemetryView() {
                       ID: {r.id} · Cap: {r.capacity} evacuees
                     </div>
                   </div>
-
                   <span
                     className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-full text-white"
                     style={{ background: r.available ? 'var(--safe)' : 'var(--caution)' }}
@@ -154,7 +141,6 @@ export default function AuditTelemetryView() {
                     <CheckCircle2 size={11} /> {r.available ? 'STANDBY' : 'DEPLOYED'}
                   </span>
                 </div>
-
                 <div className="pt-2 flex items-center justify-between border-t border-slate-800 text-[11px] font-mono">
                   <span className="text-emerald-400 flex items-center gap-1">
                     <Lock size={11} /> HMAC-SHA256 Verified
@@ -169,7 +155,6 @@ export default function AuditTelemetryView() {
             ))}
           </div>
         </div>
-
         {}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -178,7 +163,6 @@ export default function AuditTelemetryView() {
             </h3>
             <span className="text-[10px] font-mono text-slate-400">Auto-expires after 24h</span>
           </div>
-
           <div
             className="rounded-xl overflow-hidden divide-y max-h-[500px] overflow-y-auto"
             style={{ background: 'var(--ink-raised)', borderColor: 'var(--ink-line)' }}
@@ -212,13 +196,10 @@ export default function AuditTelemetryView() {
             )}
           </div>
         </div>
-
-        {/* Col 3: Immutable Operational Audit Trail */}
         <div className="space-y-4">
           <h3 className="font-display text-sm font-semibold text-white flex items-center gap-2">
             <ShieldAlert size={16} style={{ color: 'var(--safe)' }} /> Real-Time Operational Audit Trail
           </h3>
-
           <div
             className="rounded-xl overflow-hidden divide-y max-h-[500px] overflow-y-auto"
             style={{ background: 'var(--ink-raised)', borderColor: 'var(--ink-line)' }}

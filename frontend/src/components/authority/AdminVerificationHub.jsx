@@ -21,7 +21,6 @@ import {
   Cpu,
 } from 'lucide-react'
 import { fetchMediaQueue, verifyReport, verifyShelter, verifyOfficer, batchVerifyReports } from '../../lib/api.js'
-
 function ChannelBadge({ channel }) {
   const ch = (channel || 'APP').toUpperCase()
   if (ch === 'WHATSAPP') {
@@ -51,7 +50,6 @@ function ChannelBadge({ channel }) {
     </span>
   )
 }
-
 export default function AdminVerificationHub({ onDataChanged }) {
   const [queue, setQueue] = useState([])
   const [loading, setLoading] = useState(true)
@@ -61,7 +59,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
   const [zoomedImage, setZoomedImage] = useState(null)
   const [actionLoading, setActionLoading] = useState({})
   const [successToast, setSuccessToast] = useState(null)
-
   const loadQueue = useCallback(async () => {
     try {
       const data = await fetchMediaQueue()
@@ -71,18 +68,15 @@ export default function AdminVerificationHub({ onDataChanged }) {
       setLoading(false)
     }
   }, [])
-
   useEffect(() => {
     loadQueue()
     const timer = setInterval(loadQueue, 3500)
     return () => clearInterval(timer)
   }, [loadQueue])
-
   function showToast(msg) {
     setSuccessToast(msg)
     setTimeout(() => setSuccessToast(null), 3000)
   }
-
   async function handleVerify(item) {
     setActionLoading((p) => ({ ...p, [item.id]: true }))
     try {
@@ -102,7 +96,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
       setActionLoading((p) => ({ ...p, [item.id]: false }))
     }
   }
-
   async function handleReject(item) {
     setActionLoading((p) => ({ ...p, [item.id]: true }))
     try {
@@ -122,7 +115,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
       setActionLoading((p) => ({ ...p, [item.id]: false }))
     }
   }
-
   async function handleBlacklist(item) {
     if (!confirm('This will block the reporter device and phone number for 24 hours. Proceed?')) return
     setActionLoading((p) => ({ ...p, [item.id]: true }))
@@ -139,17 +131,14 @@ export default function AdminVerificationHub({ onDataChanged }) {
       setActionLoading((p) => ({ ...p, [item.id]: false }))
     }
   }
-
   async function handleBatchApproveHighConfidence() {
     const highConfReportIds = queue
       .filter((i) => i.entityType === 'REPORT' && (i.status === 'PENDING' || i.imageStatus === 'PENDING_REVIEW') && !i.isSpoofed && (i.aiAnalysis?.confidence >= 90 || i.trustScore >= 90))
       .map((i) => i.entityId)
-
     if (highConfReportIds.length === 0) {
       alert('No high-confidence AI items currently pending approval.')
       return
     }
-
     try {
       await batchVerifyReports(highConfReportIds)
       showToast(`Batch-verified ${highConfReportIds.length} high-confidence incidents!`)
@@ -159,7 +148,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
       alert(err.message || 'Batch verification failed')
     }
   }
-
   const isPendingStatus = (item) => {
     const s = (item.status || '').toUpperCase()
     const imgS = (item.imageStatus || '').toUpperCase()
@@ -174,19 +162,16 @@ export default function AdminVerificationHub({ onDataChanged }) {
       imgS === 'REGISTERED'
     )
   }
-
   const isVerifiedStatus = (item) => {
     const s = (item.status || '').toUpperCase()
     const imgS = (item.imageStatus || '').toUpperCase()
     return s === 'VERIFIED' || s === 'ACTIVE' || imgS === 'VERIFIED'
   }
-
   const isRejectedStatus = (item) => {
     const s = (item.status || '').toUpperCase()
     const imgS = (item.imageStatus || '').toUpperCase()
     return s === 'REJECTED' || s === 'BLACKLISTED' || imgS === 'REJECTED'
   }
-
   const filtered = queue.filter((item) => {
     if (filterType !== 'ALL' && item.entityType !== filterType) return false
     if (filterChannel !== 'ALL' && (item.channel || 'APP') !== filterChannel) return false
@@ -195,13 +180,10 @@ export default function AdminVerificationHub({ onDataChanged }) {
     if (filterStatus === 'REJECTED') return isRejectedStatus(item)
     return true
   })
-
   const pendingCount = queue.filter(isPendingStatus).length
-
   const highConfCount = queue.filter(
     (i) => isPendingStatus(i) && !i.isSpoofed && (i.aiAnalysis?.confidence >= 85 || i.trustScore >= 80),
   ).length
-
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--ink)' }}>
       {}
@@ -213,7 +195,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
           <CheckCheck size={16} /> {successToast}
         </div>
       )}
-
       {}
       <div
         className="p-5 flex flex-wrap items-center justify-between gap-4 shrink-0"
@@ -238,7 +219,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
             Inspect cell tower handshakes, anti-spoofing flags, hardware sensor locks, and multi-channel emergency feeds.
           </p>
         </div>
-
         <div className="flex items-center gap-3">
           {highConfCount > 0 && (
             <button
@@ -249,7 +229,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
               <CheckCheck size={14} /> Batch Approve Verified ({highConfCount})
             </button>
           )}
-
           <button
             onClick={loadQueue}
             className="p-2 rounded-lg text-slate-300 hover:text-white transition-colors"
@@ -260,7 +239,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
           </button>
         </div>
       </div>
-
       {}
       <div
         className="px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0"
@@ -280,20 +258,19 @@ export default function AdminVerificationHub({ onDataChanged }) {
             <button
               key={key}
               onClick={() => setFilterType(key)}
-              className="px-2.5 py-1 rounded-md transition-all font-mono text-[11px]"
+              className="px-2.5 py-1 rounded-md transition-all font-mono text-[11px] font-bold cursor-pointer"
               style={{
                 background: filterType === key ? 'var(--signal)' : 'transparent',
-                color: filterType === key ? 'white' : 'var(--mist)',
+                color: filterType === key ? '#FFFFFF' : 'var(--text-primary)',
               }}
             >
               {label}
             </button>
           ))}
         </div>
-
         {}
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px] uppercase" style={{ color: 'var(--mist)' }}>
+          <span className="font-mono text-[11px] uppercase font-bold" style={{ color: 'var(--text-primary)' }}>
             Channel:
           </span>
           {[
@@ -305,10 +282,11 @@ export default function AdminVerificationHub({ onDataChanged }) {
             <button
               key={key}
               onClick={() => setFilterChannel(key)}
-              className="px-2 py-0.5 rounded font-mono text-[10px] transition-all"
+              className="px-2.5 py-1 rounded font-mono text-[10px] font-bold transition-all cursor-pointer"
               style={{
-                background: filterChannel === key ? 'rgba(255,255,255,0.15)' : 'transparent',
-                color: filterChannel === key ? 'white' : 'var(--mist)',
+                background: filterChannel === key ? 'var(--signal)' : 'var(--ink)',
+                color: filterChannel === key ? '#FFFFFF' : 'var(--text-primary)',
+                border: filterChannel === key ? '1px solid var(--signal)' : '1px solid var(--ink-line)',
               }}
             >
               {label}
@@ -316,7 +294,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
           ))}
         </div>
       </div>
-
       {}
       <div className="flex-1 overflow-y-auto p-5">
         {filtered.length === 0 ? (
@@ -334,7 +311,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                 item.status === 'PENDING' || item.imageStatus === 'PENDING_REVIEW' || item.status === 'REGISTERED'
               const aiConf = item.aiAnalysis?.confidence ?? item.trustScore ?? 50
               const aiColor = item.isSpoofed ? 'var(--hazard)' : aiConf >= 85 ? 'var(--safe)' : aiConf >= 60 ? 'var(--caution)' : 'var(--hazard)'
-
               return (
                 <div
                   key={item.id}
@@ -359,11 +335,9 @@ export default function AdminVerificationHub({ onDataChanged }) {
                         <span className="text-xs font-mono">No Image Telemetry</span>
                       </div>
                     )}
-
                     <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                       <ChannelBadge channel={item.channel} />
                     </div>
-
                     <div className="absolute top-2.5 right-2.5">
                       {item.isSpoofed ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-600 text-white shadow animate-pulse flex items-center gap-1">
@@ -386,8 +360,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                       )}
                     </div>
                   </div>
-
-                  {/* Body Content */}
                   <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className="font-display text-sm font-semibold text-white leading-snug">
@@ -396,8 +368,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                       <p className="text-xs mt-1 line-clamp-2 leading-relaxed" style={{ color: 'var(--mist)' }}>
                         {item.description}
                       </p>
-
-                      {/* Submitter & Location Meta */}
                       <div className="mt-2.5 space-y-1 font-mono text-[11px]" style={{ color: 'var(--mist)' }}>
                         <div className="flex items-center gap-1.5 text-amber-300">
                           <Cpu size={11} style={{ color: 'var(--signal)' }} />
@@ -414,7 +384,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                           </div>
                         )}
                       </div>
-
                       {}
                       {item.towerDetails && (
                         <div
@@ -428,8 +397,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                           {item.isSpoofed ? '⚠️ ' : '📡 '}{item.towerDetails}
                         </div>
                       )}
-
-                      {/* Trust Score Breakdown */}
                       <div
                         className="mt-2.5 p-2.5 rounded-lg space-y-1.5"
                         style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--ink-line)' }}
@@ -442,7 +409,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                             {item.trustScore ?? 50}%
                           </span>
                         </div>
-
                         {item.aiAnalysis?.detectedFeatures && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {item.aiAnalysis.detectedFeatures.map((feat, idx) => (
@@ -458,8 +424,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                         )}
                       </div>
                     </div>
-
-                    {/* Action Buttons */}
                     <div className="pt-3 flex gap-2" style={{ borderTop: '1px solid var(--ink-line)' }}>
                       <button
                         onClick={() => handleVerify(item)}
@@ -469,7 +433,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                       >
                         <ShieldCheck size={13} /> {item.status === 'VERIFIED' ? 'Verified' : 'Approve'}
                       </button>
-
                       <button
                         onClick={() => handleReject(item)}
                         disabled={actionLoading[item.id] || item.status === 'REJECTED'}
@@ -478,7 +441,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                       >
                         <XCircle size={13} /> Reject
                       </button>
-
                       {item.entityType === 'REPORT' && (
                         <button
                           onClick={() => handleBlacklist(item)}
@@ -498,7 +460,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
           </div>
         )}
       </div>
-
       {}
       {zoomedImage && (
         <div
@@ -525,7 +486,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                 ✕
               </button>
             </div>
-
             <div className="relative aspect-video max-h-[460px] bg-black rounded-lg overflow-hidden flex items-center justify-center">
               {zoomedImage.photo ? (
                 <img src={zoomedImage.photo} alt={zoomedImage.title} className="max-h-full object-contain" />
@@ -538,7 +498,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                 </div>
               )}
             </div>
-
             {}
             <div className="grid sm:grid-cols-2 gap-3 text-xs font-mono">
               <div className="p-3 rounded-lg bg-black/40 border border-slate-700 space-y-1">
@@ -554,7 +513,6 @@ export default function AdminVerificationHub({ onDataChanged }) {
                 </span>
               </div>
             </div>
-
             <div className="flex justify-end gap-3 pt-2 border-t border-slate-700">
               <button
                 onClick={() => {

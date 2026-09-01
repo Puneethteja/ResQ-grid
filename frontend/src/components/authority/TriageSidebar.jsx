@@ -4,26 +4,20 @@ import {
   Ban,
   Clock,
   Radio,
-  Sparkles,
   Camera,
   Search,
-  ChevronRight,
-  ShieldAlert,
   Users,
   CheckCircle2,
   XCircle,
-  Filter,
   Eye,
 } from 'lucide-react'
 import { batchVerifyReports } from '../../lib/api.js'
-
 function urgencyScore(r) {
   const ageMinutes = (Date.now() - new Date(r.metadata?.timestamp || r.createdAt || Date.now()).getTime()) / 60000
   const recency = Math.max(0, 100 - ageMinutes)
   const victims = (r.victimCount || 1) * 6
   return (r.trustScore ?? 50) * 0.5 + recency * 0.3 + victims * 0.2
 }
-
 function TrustBadge({ score, status, isSpoofed }) {
   if (isSpoofed) {
     return (
@@ -56,7 +50,6 @@ function TrustBadge({ score, status, isSpoofed }) {
     </span>
   )
 }
-
 export default function TriageSidebar({
   reports = [],
   clusters = [],
@@ -65,16 +58,23 @@ export default function TriageSidebar({
   onSelect,
   onOpenDetail,
 }) {
-  const [tab, setTab] = useState('PENDING') // PENDING | VERIFIED | ALL
-  const [channelFilter, setChannelFilter] = useState('ALL') // ALL | APP | SMS | WHATSAPP
+  const [tab, setTab] = useState('PENDING')
+  const [channelFilter, setChannelFilter] = useState('ALL')
   const [search, setSearch] = useState('')
   const [batchLoading, setBatchLoading] = useState(false)
-
+  const pendingReports = reports.filter((r) => r.trustStatus === 'PENDING')
+  const verifiedReports = reports.filter((r) => r.trustStatus === 'VERIFIED')
+  const rejectedReports = reports.filter((r) => r.trustStatus === 'REJECTED' || r.trustStatus === 'BLACKLISTED')
   const filtered = reports.filter((r) => {
-    if (tab === 'PENDING' && (r.trustStatus === 'VERIFIED' || r.trustStatus === 'BLACKLISTED' || r.trustStatus === 'REJECTED')) {
-      return false
+    if (tab === 'PENDING') {
+      if (r.trustStatus === 'VERIFIED' || r.trustStatus === 'BLACKLISTED' || r.trustStatus === 'REJECTED') {
+        return false
+      }
+    } else if (tab === 'VERIFIED') {
+      if (r.trustStatus !== 'VERIFIED') return false
+    } else if (tab === 'REJECTED') {
+      if (r.trustStatus !== 'REJECTED' && r.trustStatus !== 'BLACKLISTED') return false
     }
-    if (tab === 'VERIFIED' && r.trustStatus !== 'VERIFIED') return false
     if (channelFilter !== 'ALL' && (r.verification?.channel || 'APP') !== channelFilter) return false
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -85,11 +85,8 @@ export default function TriageSidebar({
     }
     return true
   })
-
   const sorted = [...filtered].sort((a, b) => urgencyScore(b) - urgencyScore(a))
-  const pendingReports = reports.filter((r) => r.trustStatus === 'PENDING')
   const pendingTotal = pendingReports.length
-
   async function handleBatchVerifyAll() {
     if (pendingReports.length === 0) return
     setBatchLoading(true)
@@ -107,10 +104,8 @@ export default function TriageSidebar({
       setBatchLoading(false)
     }
   }
-
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--ink-raised)', borderLeft: '1px solid var(--ink-line)' }}>
-      {/* Header & Search */}
       <div className="p-3.5 space-y-3 shrink-0" style={{ borderBottom: '1px solid var(--ink-line)' }}>
         <div className="flex items-center justify-between">
           <span className="font-display text-sm font-semibold text-white flex items-center gap-2">
@@ -123,8 +118,6 @@ export default function TriageSidebar({
             {pendingTotal} Pending
           </span>
         </div>
-
-        {/* Search input */}
         <div className="relative">
           <Search size={13} className="absolute left-2.5 top-2.5 text-slate-400" />
           <input
@@ -132,51 +125,47 @@ export default function TriageSidebar({
             placeholder="Search hazards, locations, SMS texts…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-2.5 py-1.5 rounded-lg text-xs text-white outline-none placeholder:text-slate-500 transition-all focus:ring-1 focus:ring-amber-500"
-            style={{ background: 'var(--ink)', border: '1px solid var(--ink-line)' }}
+            className="w-full pl-8 pr-2.5 py-1.5 rounded-lg text-xs outline-none transition-all focus:ring-1 focus:ring-amber-500 shadow-xs"
+            style={{ background: 'var(--ink)', border: '1px solid var(--ink-line)', color: 'var(--text-primary)' }}
           />
         </div>
-
-        {}
-        <div className="flex rounded-lg overflow-hidden text-[11px] font-mono p-0.5" style={{ background: 'var(--ink)', border: '1px solid var(--ink-line)' }}>
+        <div className="grid grid-cols-4 rounded-lg overflow-hidden text-[10px] font-mono p-0.5" style={{ background: 'var(--ink)', border: '1px solid var(--ink-line)' }}>
           {[
-            ['PENDING', `Pending (${pendingTotal})`],
-            ['VERIFIED', `Verified (${reports.filter((r) => r.trustStatus === 'VERIFIED').length})`],
-            ['ALL', `All (${reports.length})`],
-          ].map(([key, label]) => (
+            { key: 'PENDING', label: `Active (${pendingTotal})` },
+            { key: 'VERIFIED', label: `Verified (${verifiedReports.length})` },
+            { key: 'REJECTED', label: `Rejected (${rejectedReports.length})` },
+            { key: 'CLUSTERS', label: `Clusters (${clusters.length})` },
+          ].map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className="flex-1 py-1 text-center font-medium rounded-md transition-colors"
+              className="py-1.5 text-center font-bold rounded-md transition-all cursor-pointer text-[10px]"
               style={{
                 background: tab === key ? 'var(--signal)' : 'transparent',
-                color: tab === key ? 'white' : 'var(--mist)',
+                color: tab === key ? '#FFFFFF' : 'var(--text-primary)',
               }}
             >
               {label}
             </button>
           ))}
         </div>
-
-        {}
         <div className="flex items-center justify-between gap-1 text-[10px] font-mono pt-0.5">
           <div className="flex items-center gap-1">
             {['ALL', 'APP', 'SMS', 'WHATSAPP'].map((ch) => (
               <button
                 key={ch}
                 onClick={() => setChannelFilter(ch)}
-                className="px-2 py-0.5 rounded transition-colors"
+                className="px-2 py-0.5 rounded font-bold transition-all cursor-pointer text-[10px]"
                 style={{
-                  background: channelFilter === ch ? 'rgba(255,255,255,0.15)' : 'transparent',
-                  color: channelFilter === ch ? 'white' : 'var(--mist)',
-                  border: channelFilter === ch ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
+                  background: channelFilter === ch ? 'var(--signal)' : 'var(--ink)',
+                  color: channelFilter === ch ? '#FFFFFF' : 'var(--text-primary)',
+                  border: channelFilter === ch ? '1px solid var(--signal)' : '1px solid var(--ink-line)',
                 }}
               >
                 {ch === 'ALL' ? 'All' : ch}
               </button>
             ))}
           </div>
-
           {tab === 'PENDING' && pendingTotal > 1 && (
             <button
               onClick={handleBatchVerifyAll}
@@ -189,8 +178,6 @@ export default function TriageSidebar({
           )}
         </div>
       </div>
-
-      {}
       <div className="flex-1 overflow-y-auto divide-y select-text" style={{ borderColor: 'var(--ink-line)' }}>
         {sorted.length === 0 && (
           <div className="px-5 py-14 text-center text-xs space-y-2" style={{ color: 'var(--mist)' }}>
@@ -203,12 +190,13 @@ export default function TriageSidebar({
             </p>
           </div>
         )}
-
         {sorted.map((r) => {
           const isSpoofed = r.verification?.isSpoofed
           const consensus = r.clusterConsensus
           const isSelected = selectedId === r.id
-
+          const isVerified = r.trustStatus === 'VERIFIED'
+          const isRejected = r.trustStatus === 'REJECTED'
+          const isBlacklisted = r.trustStatus === 'BLACKLISTED'
           return (
             <div
               key={r.id}
@@ -236,14 +224,11 @@ export default function TriageSidebar({
                 </div>
                 <TrustBadge score={r.trustScore} status={r.trustStatus} isSpoofed={isSpoofed} />
               </div>
-
               {r.description && (
                 <p className="text-xs mt-1.5 line-clamp-2 leading-relaxed text-slate-300">
                   {r.description}
                 </p>
               )}
-
-              {}
               {consensus && (
                 <div className="mt-1.5">
                   <span
@@ -261,7 +246,6 @@ export default function TriageSidebar({
                   </span>
                 </div>
               )}
-
               <div className="flex items-center justify-between mt-2 font-mono text-[10px] text-slate-400">
                 <span className="flex items-center gap-1">
                   <Clock size={11} className="text-slate-500" />
@@ -275,47 +259,54 @@ export default function TriageSidebar({
                   {r.verification?.channel || 'APP'}
                 </span>
               </div>
-
-              {/* Quick Action Button Strip */}
               <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-slate-800" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => onOpenDetail?.(r)}
                   className="py-1 px-2.5 rounded text-[11px] font-bold text-amber-200 bg-amber-500/20 hover:bg-amber-500 hover:text-white border border-amber-500/40 hover:border-amber-400 flex items-center justify-center gap-1 shadow transition-all active:scale-95"
-                  title="Inspect detailed evidence & calculate trust score"
+                  title="Inspect detailed evidence"
                 >
                   <Eye size={12} className="text-amber-400" /> Inspect
                 </button>
-
-                <button
-                  onClick={() => onAction?.(r.id, 'VERIFY', 'Verified and confirmed high-confidence by Authority')}
-                  disabled={r.trustStatus === 'VERIFIED'}
-                  className="flex-1 py-1 rounded text-[11px] font-semibold text-white flex items-center justify-center gap-1 disabled:opacity-30 transition-transform active:scale-95 shadow"
-                  style={{ background: '#10B981' }}
-                  title="Verify incident and mark high-confidence"
-                >
-                  <ShieldCheck size={12} /> Verify
-                </button>
-
-                <button
-                  onClick={() => onAction?.(r.id, 'REJECT', 'Dismissed by officer')}
-                  disabled={r.trustStatus === 'REJECTED'}
-                  className="px-2 py-1 rounded text-[11px] font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 disabled:opacity-30 transition-colors"
-                  title="Dismiss / Reject invalid report"
-                >
-                  <XCircle size={12} />
-                </button>
-
-                <button
-                  onClick={() => {
-                    const note = prompt('Enter blacklisting reason (e.g. Malicious prank spam):', 'Adversarial prank alert')
-                    if (note !== null) onAction?.(r.id, 'BLACKLIST', note)
-                  }}
-                  disabled={r.trustStatus === 'BLACKLISTED'}
-                  className="px-2 py-1 rounded text-[11px] font-medium text-rose-400 hover:text-rose-200 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 disabled:opacity-30 transition-colors"
-                  title="24-Hour Instant Blacklist device & phone"
-                >
-                  <Ban size={12} />
-                </button>
+                {isVerified ? (
+                  <div className="flex-1 py-1 px-2.5 rounded text-[11px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-700 flex items-center justify-center gap-1.5 shadow-sm">
+                    <ShieldCheck size={13} className="text-emerald-400" /> Confirmed Verified
+                  </div>
+                ) : isRejected ? (
+                  <div className="flex-1 py-1 px-2.5 rounded text-[11px] font-bold text-rose-300 bg-rose-950/80 border border-rose-800 flex items-center justify-center gap-1.5 shadow-sm">
+                    <XCircle size={13} className="text-rose-400" /> False Alarm / Rejected
+                  </div>
+                ) : isBlacklisted ? (
+                  <div className="flex-1 py-1 px-2.5 rounded text-[11px] font-bold text-slate-400 bg-slate-900 border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm">
+                    <Ban size={13} className="text-red-400" /> Blacklisted
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onAction?.(r.id, 'VERIFY', 'Verified and confirmed high-confidence by Authority')}
+                      className="flex-1 py-1 rounded text-[11px] font-semibold text-white flex items-center justify-center gap-1 transition-transform active:scale-95 shadow bg-emerald-600 hover:bg-emerald-500"
+                      title="Verify incident"
+                    >
+                      <ShieldCheck size={12} /> Verify
+                    </button>
+                    <button
+                      onClick={() => onAction?.(r.id, 'REJECT', 'Dismissed by officer')}
+                      className="px-2 py-1 rounded text-[11px] font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                      title="Dismiss / Reject report"
+                    >
+                      <XCircle size={12} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const note = prompt('Enter blacklisting reason (e.g. Malicious prank spam):', 'Adversarial prank alert')
+                        if (note !== null) onAction?.(r.id, 'BLACKLIST', note)
+                      }}
+                      className="px-2 py-1 rounded text-[11px] font-medium text-rose-400 hover:text-rose-200 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 transition-colors"
+                      title="24-Hour Instant Blacklist device & phone"
+                    >
+                      <Ban size={12} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )

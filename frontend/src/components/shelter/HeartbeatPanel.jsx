@@ -1,20 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Droplets, Zap, Cross, Radio } from 'lucide-react'
-
 const PING_INTERVAL_MS = 15 * 60 * 1000
 const STATUSES = ['ACTIVE', 'LIMITED', 'DOWN']
-
 function StatusToggle({ icon: Icon, label, value, onChange }) {
   const color = value === 'ACTIVE' ? 'var(--safe)' : value === 'LIMITED' ? 'var(--caution)' : 'var(--hazard)'
   return <div className="rounded-md p-3 flex items-center justify-between" style={{ background: 'var(--ink)', border: '1px solid var(--ink-line)' }}><span className="flex items-center gap-2 text-sm text-white"><Icon size={16} style={{ color }} />{label}</span><div className="flex rounded-md overflow-hidden" style={{ border: '1px solid var(--ink-line)' }}>{STATUSES.map((status) => <button key={status} onClick={() => onChange(status)} className="px-2 py-1 font-mono text-[10px]" style={{ background: value === status ? color : 'transparent', color: value === status ? 'white' : 'var(--mist)' }}>{status}</button>)}</div></div>
 }
-
 function secondsUntil(timestamp) {
   const sentAt = Date.parse(timestamp || '')
   return Math.max(0, Math.ceil(((Number.isNaN(sentAt) ? Date.now() : sentAt + PING_INTERVAL_MS) - Date.now()) / 1000))
 }
 function formatCountdown(seconds) { return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}` }
-
 export default function HeartbeatPanel({ water, power, medical, setWater, setPower, setMedical, lastHeartbeat, onHeartbeat }) {
   const [secondsLeft, setSecondsLeft] = useState(() => secondsUntil(lastHeartbeat))
   const [sending, setSending] = useState(false)

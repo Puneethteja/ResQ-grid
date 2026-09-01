@@ -19,6 +19,8 @@ import SheltersManagementGrid from '../components/authority/SheltersManagementGr
 import AuditTelemetryView from '../components/authority/AuditTelemetryView.jsx'
 import SpatialOptimizerConsole from '../components/authority/SpatialOptimizerConsole.jsx'
 import IncidentDetailModal from '../components/authority/IncidentDetailModal.jsx'
+import ThemeLanguageBar from '../components/common/ThemeLanguageBar.jsx'
+import { useApp } from '../context/AppContext.jsx'
 import {
   fetchReports,
   fetchShelters,
@@ -30,10 +32,12 @@ import {
 } from '../lib/api.js'
 import { clearAuthoritySession, getAuthorityUsername } from '../lib/authoritySession.js'
 import { logout as apiLogout } from '../lib/api.js'
-
 const DEFAULT_CENTER = [20.2961, 85.8245] 
-
 export default function AuthorityDashboard() {
+  const { t, setTheme } = useApp()
+  useEffect(() => {
+    setTheme('dark')
+  }, [setTheme])
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('MAP') 
   const [reports, setReports] = useState([])
@@ -43,9 +47,15 @@ export default function AuthorityDashboard() {
   const [selectedId, setSelectedId] = useState(null)
   const [inspectedReport, setInspectedReport] = useState(null)
   const [showHeatmap, setShowHeatmap] = useState(true)
-  const [lastSync, setLastSync] = useState(null)
+  const [lastSync, setLastSync] = useState(new Date())
+  const [syncing, setSyncing] = useState(false)
   const [overview, setOverview] = useState(null)
 
+  async function handleManualSync() {
+    setSyncing(true)
+    await loadData()
+    setTimeout(() => setSyncing(false), 400)
+  }
   const loadData = useCallback(async () => {
     try {
       const [reportsList, sheltersList, microHavens, operationalData, clusterData, resourceData] = await Promise.all([
@@ -56,21 +66,17 @@ export default function AuthorityDashboard() {
         fetchClusters().catch(() => []),
         fetchResources().catch(() => ({ resources: [] })),
       ])
-
       const repList = Array.isArray(reportsList) ? reportsList : []
       const sList = Array.isArray(sheltersList) ? sheltersList : []
       const mList = Array.isArray(microHavens) ? microHavens : []
       const allShelters = [...sList, ...mList]
       const rList = resourceData?.resources || []
-
       setReports(repList)
       setShelters(allShelters)
       setOverview(operationalData)
       setClusters(Array.isArray(clusterData) ? clusterData : [])
       setResources(rList)
       setLastSync(new Date())
-
-      // Keep inspectedReport in sync if open
       setInspectedReport((curr) => {
         if (!curr) return null
         return repList.find((r) => r.id === curr.id) || curr
@@ -79,13 +85,11 @@ export default function AuthorityDashboard() {
       console.error('Fatal loadData error:', e)
     }
   }, [])
-
   useEffect(() => {
     loadData()
     const id = setInterval(loadData, 3500)
     return () => clearInterval(id)
   }, [loadData])
-
   async function handleAction(reportId, action, note) {
     setReports((prev) =>
       prev.map((r) =>
@@ -108,17 +112,14 @@ export default function AuthorityDashboard() {
       loadData()
     }
   }
-
   async function handleLogout() {
     await apiLogout()
     clearAuthoritySession()
     navigate('/authority/auth', { replace: true })
   }
-
   const pendingReportsCount = reports.filter((r) => r.trustStatus === 'PENDING' || r.imageVerificationStatus === 'PENDING_REVIEW').length
   const pendingSheltersCount = shelters.filter((s) => s.verificationStatus === 'PENDING_APPROVAL' || s.verificationStatus === 'REGISTERED' || s.verificationStatus === 'PENDING').length
   const pendingMediaCount = overview?.pendingReviewCount ?? (pendingReportsCount + pendingSheltersCount)
-
   const hazardZones = [
     ...clusters
       .filter((c) => c.isElevated)
@@ -145,7 +146,6 @@ export default function AuthorityDashboard() {
         }
       }),
   ]
-
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ background: 'var(--ink)' }}>
       {}
@@ -153,7 +153,6 @@ export default function AuthorityDashboard() {
         className="flex items-center justify-between px-5 py-2.5 shrink-0"
         style={{ borderBottom: '1px solid var(--ink-line)', background: 'var(--ink)' }}
       >
-        {/* Brand & Context */}
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="ResQ-Grid Logo" className="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-slate-700 shadow" />
           <div>
@@ -168,15 +167,13 @@ export default function AuthorityDashboard() {
             <p className="text-[11px] font-mono text-slate-400">Odisha Disaster Multi-Tier Response Hub</p>
           </div>
         </div>
-
-        {/* Center Workspace Tabs */}
         <div className="hidden md:flex items-center gap-1 rounded-xl p-1" style={{ background: 'var(--ink-raised)', border: '1px solid var(--ink-line)' }}>
           {[
-            { id: 'MAP', label: 'Live Map & Triage', icon: MapIcon },
-            { id: 'OPTIMIZER', label: 'Spatial Optimizer', icon: Compass },
-            { id: 'VERIFICATION', label: 'Verification Queue', icon: Sparkles, badge: pendingMediaCount },
-            { id: 'SHELTERS', label: 'Shelter Network', icon: Building2 },
-            { id: 'AUDIT', label: 'Audit & Telemetry', icon: Radio },
+            { id: 'MAP', label: t('live_map_triage'), icon: MapIcon },
+            { id: 'OPTIMIZER', label: t('spatial_optimizer'), icon: Compass },
+            { id: 'VERIFICATION', label: t('verification_queue'), icon: Sparkles, badge: pendingMediaCount },
+            { id: 'SHELTERS', label: t('shelter_network'), icon: Building2 },
+            { id: 'AUDIT', label: t('audit_telemetry'), icon: Radio },
           ].map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -184,7 +181,7 @@ export default function AuthorityDashboard() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer"
                 style={{
                   background: isActive ? 'var(--signal)' : 'transparent',
                   color: isActive ? 'white' : 'var(--mist)',
@@ -193,7 +190,13 @@ export default function AuthorityDashboard() {
                 <Icon size={14} />
                 <span>{tab.label}</span>
                 {tab.badge > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-white text-orange-700">
+                  <span
+                    className="min-w-[18px] h-[18px] px-1.5 rounded-full text-[10px] font-mono font-bold flex items-center justify-center shadow-xs"
+                    style={{
+                      background: isActive ? '#0B1120' : '#DC2626',
+                      color: '#FFFFFF',
+                    }}
+                  >
                     {tab.badge}
                   </span>
                 )}
@@ -201,9 +204,9 @@ export default function AuthorityDashboard() {
             )
           })}
         </div>
-
         {}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <ThemeLanguageBar compact={true} />
           {activeTab === 'MAP' && (
             <button
               onClick={() => setShowHeatmap((v) => !v)}
@@ -215,38 +218,35 @@ export default function AuthorityDashboard() {
               title="Toggle Crisis Heatmap Density Layer"
             >
               <Layers size={13} style={{ color: showHeatmap ? '#EF4444' : 'var(--mist)' }} />
-              <span className="font-bold">Heatmap {showHeatmap ? 'ACTIVE' : 'OFF'}</span>
+              <span className="font-bold">{t('heatmap')} {showHeatmap ? 'ACTIVE' : 'OFF'}</span>
             </button>
           )}
-
           <button
-            onClick={loadData}
-            className="flex items-center gap-1 font-mono text-[11px] px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white"
-            style={{ background: 'var(--ink-raised)', border: '1px solid var(--ink-line)' }}
-            title="Force immediate sync"
+            onClick={handleManualSync}
+            className="flex items-center gap-1.5 font-mono text-[11px] px-2.5 py-1.5 rounded-lg transition-all shadow-xs cursor-pointer"
+            style={{ background: 'var(--ink-raised)', border: '1px solid var(--ink-line)', color: 'var(--text-primary)' }}
+            title="Force immediate telemetry sync"
           >
-            <RefreshCw size={12} className={lastSync ? '' : 'animate-spin'} />
-            <span className="hidden lg:inline">{lastSync ? lastSync.toLocaleTimeString() : 'Syncing…'}</span>
+            <RefreshCw size={12} className={syncing ? 'animate-spin text-amber-500' : 'text-emerald-500'} />
+            <span className="hidden lg:inline font-bold">
+              {lastSync ? `Sync: ${lastSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Syncing…'}
+            </span>
           </button>
-
-          <span className="font-mono text-xs hidden xl:inline" style={{ color: 'var(--mist)' }}>
+          <span className="font-mono text-xs hidden xl:inline font-semibold" style={{ color: 'var(--text-primary)' }}>
             {getAuthorityUsername() || 'Officer in Charge'}
           </span>
-
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 font-mono text-[11px] px-3 py-1.5 rounded-lg text-white transition-colors hover:bg-rose-950"
+            className="flex items-center gap-1.5 font-mono text-[11px] px-3 py-1.5 rounded-lg text-white transition-colors hover:bg-rose-950 cursor-pointer"
             style={{ background: 'rgba(185, 71, 59, 0.25)', border: '1px solid var(--hazard)' }}
           >
-            <LogOut size={13} /> Log out
+            <LogOut size={13} />
+            <span>Sign Out</span>
           </button>
         </div>
       </header>
-
       {}
       <OperationsStrip overview={overview} />
-
-      {/* Main Workspace Body */}
       <div className="flex-1 min-h-0 relative">
         {activeTab === 'MAP' && (
           <div className="h-full w-full flex flex-col md:flex-row overflow-hidden relative">
@@ -280,25 +280,19 @@ export default function AuthorityDashboard() {
             </div>
           </div>
         )}
-
         {activeTab === 'OPTIMIZER' && (
           <SpatialOptimizerConsole onDataChanged={loadData} />
         )}
-
         {activeTab === 'VERIFICATION' && (
           <AdminVerificationHub onDataChanged={loadData} />
         )}
-
         {activeTab === 'SHELTERS' && (
           <SheltersManagementGrid shelters={shelters} onDataChanged={loadData} />
         )}
-
         {activeTab === 'AUDIT' && (
           <AuditTelemetryView />
         )}
       </div>
-
-      {/* Deep Incident Inspector Modal */}
       {inspectedReport && (
         <IncidentDetailModal
           report={inspectedReport}

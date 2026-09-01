@@ -18,9 +18,10 @@ import {
   KeyRound,
   X,
 } from 'lucide-react'
+import ThemeLanguageBar from '../components/common/ThemeLanguageBar.jsx'
+import { useApp } from '../context/AppContext.jsx'
 import { login, register } from '../lib/api.js'
 import { setSession } from '../lib/authoritySession.js'
-
 function readImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -29,12 +30,10 @@ function readImage(file) {
     reader.readAsDataURL(file)
   })
 }
-
 function LiveCaptureModal({ title, onCapture, onClose }) {
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   const [error, setError] = useState(null)
-
   useEffect(() => {
     let cancelled = false
     navigator.mediaDevices
@@ -50,14 +49,12 @@ function LiveCaptureModal({ title, onCapture, onClose }) {
       .catch(() => {
         setError('Camera permission denied or camera device unavailable.')
       })
-
     return () => {
       cancelled = true
       streamRef.current?.getTracks().forEach((t) => t.stop())
       streamRef.current = null
     }
   }, [])
-
   function takeSnapshot() {
     const video = videoRef.current
     if (!video) return
@@ -66,19 +63,16 @@ function LiveCaptureModal({ title, onCapture, onClose }) {
     canvas.height = video.videoHeight || 480
     const ctx = canvas.getContext('2d')
     ctx.drawImage(video, 0, 0)
-
     ctx.fillStyle = 'rgba(0,0,0,0.65)'
     ctx.fillRect(0, canvas.height - 28, canvas.width, 28)
     ctx.fillStyle = '#38BDF8'
     ctx.font = '11px monospace'
     ctx.fillText(`OFFICER AUTH VERIFICATION #${new Date().toISOString()}`, 10, canvas.height - 10)
-
     const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
     onCapture(dataUrl)
     streamRef.current?.getTracks().forEach((t) => t.stop())
     onClose()
   }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
       <div className="w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl p-5 space-y-4" style={{ background: 'var(--ink-raised)', border: '1px solid var(--ink-line)' }}>
@@ -91,7 +85,6 @@ function LiveCaptureModal({ title, onCapture, onClose }) {
             <X size={15} />
           </button>
         </div>
-
         {error ? (
           <div className="p-4 rounded-lg text-xs text-rose-300 bg-rose-950/40 border border-rose-800 text-center">
             {error}
@@ -104,7 +97,6 @@ function LiveCaptureModal({ title, onCapture, onClose }) {
             </div>
           </div>
         )}
-
         {!error && (
           <div className="flex justify-end gap-2">
             <button
@@ -121,7 +113,6 @@ function LiveCaptureModal({ title, onCapture, onClose }) {
     </div>
   )
 }
-
 export default function AuthPortal({ initialRole = 'shelter' }) {
   const navigate = useNavigate()
   const role = initialRole
@@ -129,7 +120,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
   const title = isAuthority ? 'Authority Command Sign In' : 'Shelter Manager Sign In'
   const [isSignUp, setIsSignUp] = useState(false)
   const [captureModal, setCaptureModal] = useState(null) 
-
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -143,27 +133,22 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
     officialId: null, 
     proofPhoto: null, 
   })
-
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }))
-
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
-
     const cleanEmail = form.email.trim()
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!cleanEmail || (cleanEmail.includes('@') && !emailRegex.test(cleanEmail))) {
       setError('Please enter a valid email address or username.')
       return
     }
-
     if (!form.password || form.password.length < 8) {
       setError('Password must be at least 8 characters long.')
       return
     }
-
     if (isSignUp) {
       if (!form.name.trim()) {
         setError('Please enter your full name or facility name.')
@@ -188,7 +173,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
         }
       }
     }
-
     setSaving(true)
     try {
       let response
@@ -200,7 +184,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
             ? await readImage(form.officialId)
             : undefined
           : undefined
-
         const proofPhoto = isAuthority
           ? typeof form.proofPhoto === 'string'
             ? form.proofPhoto
@@ -208,7 +191,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
             ? await readImage(form.proofPhoto)
             : undefined
           : undefined
-
         response = await register({
           email: cleanEmail,
           password: form.password,
@@ -234,7 +216,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
       setSaving(false)
     }
   }
-
   return (
     <main className="min-h-screen flex items-center justify-center p-5 sm:p-8" style={{ background: 'var(--ink)' }}>
       {captureModal && (
@@ -244,20 +225,21 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
           onClose={() => setCaptureModal(null)}
         />
       )}
-
       <section
         className="max-w-md w-full rounded-2xl p-7 sm:p-8 space-y-5 shadow-2xl transition-all"
         style={{ background: 'var(--ink-raised)', border: '1px solid var(--ink-line)' }}
       >
         <div className="flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-300 hover:text-white transition-colors">
-            <ArrowLeft size={14} /> Back to role select
+          <Link to="/" className="inline-flex items-center gap-1.5 text-xs font-mono font-bold px-3 py-1.5 rounded-lg border shadow-xs transition-colors" style={{ background: 'var(--ink)', borderColor: 'var(--ink-line)', color: 'var(--text-primary)' }}>
+            <ArrowLeft size={14} /> Back
           </Link>
-          <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--mist)' }}>
-            {isAuthority ? 'RESTRICTED PORTAL' : 'SHELTER NODE'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded hidden sm:inline" style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--mist)' }}>
+              {isAuthority ? 'RESTRICTED' : 'SHELTER'}
+            </span>
+            <ThemeLanguageBar compact={true} />
+          </div>
         </div>
-
         <header className="space-y-1.5">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="ResQ-Grid Logo" className="w-9 h-9 rounded-xl object-contain bg-slate-900 border border-slate-700 shadow" />
@@ -274,6 +256,42 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
           </div>
         </header>
 
+        {!isSignUp && (
+          <div
+            className="p-3 rounded-xl border flex items-center justify-between gap-3 shadow-xs"
+            style={{
+              background: 'var(--ink)',
+              borderColor: 'var(--ink-line)',
+            }}
+          >
+            <div className="space-y-0.5 text-xs font-mono">
+              <div className="flex items-center gap-1.5 font-bold" style={{ color: 'var(--text-primary)' }}>
+                <KeyRound size={13} className="text-amber-500" />
+                <span>Test Credentials:</span>
+              </div>
+              <p className="text-[11px]" style={{ color: 'var(--mist)' }}>
+                {isAuthority ? 'commander@resqgrid.gov • response2026' : 'shelter@resqgrid.gov • shelter2026'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (isAuthority) {
+                  update('email', 'commander@resqgrid.gov')
+                  update('password', 'response2026')
+                } else {
+                  update('email', 'shelter@resqgrid.gov')
+                  update('password', 'shelter2026')
+                }
+              }}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold text-white shadow-xs cursor-pointer transition-transform hover:scale-105"
+              style={{ background: 'var(--signal)' }}
+            >
+              ⚡ Autofill
+            </button>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-3.5">
           {isSignUp && (
             <>
@@ -284,7 +302,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                 value={form.name}
                 onChange={(v) => update('name', v)}
               />
-
               {isAuthority && (
                 <>
                   <div className="grid grid-cols-2 gap-3">
@@ -303,7 +320,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                         <option value="Fire & Rescue Chief">Fire & Rescue Chief</option>
                       </select>
                     </label>
-
                     <Field
                       label="Department / Agency"
                       icon={Building}
@@ -314,7 +330,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                   </div>
                 </>
               )}
-
               <div className="grid grid-cols-2 gap-3">
                 <Field
                   label="Official Contact Phone"
@@ -333,7 +348,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
               </div>
             </>
           )}
-
           <Field
             label={isAuthority ? 'Official Email Address or Username' : 'Registered Email Address'}
             icon={Mail}
@@ -342,7 +356,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
             value={form.email}
             onChange={(v) => update('email', v)}
           />
-
           <Field
             label="Password"
             icon={Lock}
@@ -352,13 +365,11 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
             value={form.password}
             onChange={(v) => update('password', v)}
           />
-
           {isSignUp && isAuthority && (
             <div className="p-3.5 rounded-xl space-y-3" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--ink-line)' }}>
               <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-white">
                 <BadgeCheck size={14} style={{ color: 'var(--signal)' }} /> Official Credential Verification
               </div>
-
               <Field
                 label="Government Badge / ID Number"
                 icon={Building}
@@ -366,7 +377,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                 value={form.authorityId}
                 onChange={(v) => update('authorityId', v)}
               />
-
               <div>
                 <Field
                   label="Agency Verification Security Code (Default: AUTH-SECURE-99)"
@@ -376,8 +386,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                   onChange={(v) => update('verificationCode', v)}
                 />
               </div>
-
-              {/* Photo ID Capture / Upload */}
               <div className="space-y-2 pt-1 border-t border-slate-700">
                 <label className="font-mono text-[11px] text-slate-300 block">
                   1. Official Government ID Document / Badge
@@ -406,8 +414,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
                   </div>
                 )}
               </div>
-
-              {/* Officer Live Selfie Capture / Upload */}
               <div className="space-y-2 pt-1 border-t border-slate-700">
                 <label className="font-mono text-[11px] text-slate-300 block">
                   2. Officer Live Biometric Verification Photo
@@ -438,7 +444,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
               </div>
             </div>
           )}
-
           {error && (
             <div
               className="p-3 rounded-lg text-xs leading-relaxed"
@@ -447,7 +452,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
               {error}
             </div>
           )}
-
           <button
             type="submit"
             disabled={saving}
@@ -457,7 +461,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
             {saving ? 'Validating credentials…' : isSignUp ? 'Create Verified Officer Account' : 'Sign In & Enter Command Room'}
           </button>
         </form>
-
         <div className="pt-2 text-center border-t" style={{ borderColor: 'var(--ink-line)' }}>
           <button
             type="button"
@@ -479,7 +482,6 @@ export default function AuthPortal({ initialRole = 'shelter' }) {
     </main>
   )
 }
-
 function Field({ label, icon: Icon, value, onChange, type = 'text', minLength, placeholder }) {
   return (
     <label className="block text-xs" style={{ color: 'var(--mist)' }}>

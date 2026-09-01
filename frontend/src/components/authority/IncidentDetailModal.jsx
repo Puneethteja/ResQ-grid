@@ -23,14 +23,12 @@ import {
   Layers,
 } from 'lucide-react'
 import { fetchResources, dispatchResource } from '../../lib/api.js'
-
 export default function IncidentDetailModal({ report, onClose, onAction, onDataChanged }) {
   const [resources, setResources] = useState([])
   const [selectedResource, setSelectedResource] = useState('')
   const [dispatching, setDispatching] = useState(false)
   const [dispatchSuccess, setDispatchSuccess] = useState(null)
   const [zoomed, setZoomed] = useState(false)
-
   useEffect(() => {
     fetchResources()
       .then((res) => {
@@ -41,18 +39,14 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
       })
       .catch(() => {})
   }, [])
-
   if (!report) return null
-
   const isVerified = report.trustStatus === 'VERIFIED'
   const isBlacklisted = report.trustStatus === 'BLACKLISTED'
   const isRejected = report.trustStatus === 'REJECTED'
   const isSpoofed = report.verification?.isSpoofed
-
   const trustScore = report.trustScore ?? 50
   const aiConf = report.aiAnalysis?.confidence ?? trustScore
   const aiColor = isSpoofed ? '#EF4444' : trustScore >= 80 ? '#10B981' : trustScore >= 50 ? '#F59E0B' : '#EF4444'
-
   async function handleDispatch(e) {
     e.preventDefault()
     if (!selectedResource) return
@@ -70,13 +64,11 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
       setDispatching(false)
     }
   }
-
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md"
       onClick={onClose}
     >
-      {/* Zoomed Image Lightbox */}
       {zoomed && report.photo && (
         <div
           className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/95 backdrop-blur-lg"
@@ -105,14 +97,11 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
           </div>
         </div>
       )}
-
-      {/* Main Inspection Modal Dialog */}
       <div
         className="max-w-2xl w-full rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between max-h-[92vh] select-text"
         style={{ background: 'var(--ink-raised, #0F172A)', border: '1px solid var(--ink-line, #334155)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
         <div className="p-5 flex items-center justify-between shrink-0" style={{ borderBottom: '1px solid var(--ink-line, #334155)', background: 'rgba(0,0,0,0.2)' }}>
           <div className="flex items-center gap-3">
             <span
@@ -142,7 +131,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
               </p>
             </div>
           </div>
-
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors bg-slate-800 hover:bg-slate-700"
@@ -151,10 +139,7 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
             <X size={17} />
           </button>
         </div>
-
-        {/* Modal Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {/* Top Section: Photo Evidence + Reporter Metadata */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div
               className="aspect-video bg-black/70 rounded-xl overflow-hidden relative flex items-center justify-center border border-slate-700 cursor-pointer group shadow-inner"
@@ -180,8 +165,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
                 </span>
               )}
             </div>
-
-            {/* Submitter & Location Vitals */}
             <div className="space-y-2.5 flex flex-col justify-between">
               <div>
                 <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">
@@ -191,7 +174,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
                   {report.description || 'No additional narrative provided.'}
                 </p>
               </div>
-
               <div className="font-mono text-xs space-y-1.5 p-3 rounded-lg bg-slate-900/90 border border-slate-800">
                 <div className="flex items-center justify-between text-slate-300">
                   <span className="flex items-center gap-1.5 text-slate-400"><Smartphone size={13} className="text-amber-400" /> Submitter ID:</span>
@@ -212,8 +194,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
               </div>
             </div>
           </div>
-
-          {/* Telecom Network Handshake Box */}
           <div
             className="p-3.5 rounded-xl space-y-1 text-xs font-mono"
             style={{
@@ -239,8 +219,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
               {report.verification?.towerDetails || 'Serving cell tower verified.'}
             </p>
           </div>
-
-          {/* Multi-Factor Trust Score Calculation Matrix */}
           <div className="p-4 rounded-xl space-y-3 bg-slate-900/90 border border-slate-800">
             <div className="flex items-center justify-between">
               <div>
@@ -257,8 +235,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
                 </span>
               </div>
             </div>
-
-            {/* Factor breakdown rows */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono pt-1">
               <div className="p-2 rounded bg-black/40 border border-slate-800 flex items-center justify-between">
                 <span className="text-slate-400">Cell Tower Handshake:</span>
@@ -283,7 +259,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
                 </span>
               </div>
             </div>
-
             {report.aiAnalysis?.detectedFeatures && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {report.aiAnalysis.detectedFeatures.map((f, i) => (
@@ -294,8 +269,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
               </div>
             )}
           </div>
-
-          {/* Quick Field Unit Dispatch Section */}
           <form onSubmit={handleDispatch} className="p-3.5 rounded-xl space-y-2.5 bg-slate-900/90 border border-slate-800">
             <div className="flex items-center justify-between">
               <span className="text-xs font-display font-medium text-white flex items-center gap-1.5">
@@ -307,7 +280,6 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
                 </span>
               )}
             </div>
-
             <div className="flex gap-2">
               <select
                 value={selectedResource}
@@ -331,50 +303,58 @@ export default function IncidentDetailModal({ report, onClose, onAction, onDataC
             </div>
           </form>
         </div>
-
-        {/* Action Controls Footer */}
         <div className="p-4 flex flex-wrap gap-2.5 shrink-0 bg-slate-900/95" style={{ borderTop: '1px solid var(--ink-line, #334155)' }}>
-          <button
-            onClick={() => {
-              onAction(report.id, 'VERIFY', 'Verified and confirmed high-confidence by Authority')
-              onClose()
-            }}
-            disabled={isVerified}
-            className="flex-1 min-w-[130px] py-2.5 px-4 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow transition-transform active:scale-95 disabled:opacity-40"
-            style={{ background: '#10B981' }}
-            title="Mark as Verified Hazard and broadcast to all units"
-          >
-            <ShieldCheck size={15} /> {isVerified ? 'Verified Active Hazard' : 'Approve & Verify'}
-          </button>
-
-          <button
-            onClick={() => {
-              onAction(report.id, 'REJECT', 'Dismissed as false alarm by Officer')
-              onClose()
-            }}
-            disabled={isRejected}
-            className="py-2.5 px-4 rounded-lg text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition-colors disabled:opacity-40 bg-rose-950/70 hover:bg-rose-900 border border-rose-800"
-            title="Mark as False Alarm / Non-Hazard"
-          >
-            <XCircle size={15} /> False Alarm / Reject
-          </button>
-
-          <button
-            onClick={() => {
-              const note = prompt('Enter blacklisting reason (e.g. Adversarial spoofer / spam):', 'Adversarial prank alert')
-              if (note !== null) {
-                onAction(report.id, 'BLACKLIST', note)
-                onClose()
-              }
-            }}
-            disabled={isBlacklisted}
-            className="py-2.5 px-3.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-red-950 border border-slate-700 hover:border-red-800 flex items-center justify-center gap-1.5 transition-colors"
-            title="Instant 24-Hour Blacklist submitter device & phone"
-          >
-            <Ban size={15} /> 24h Blacklist
-          </button>
+          {isVerified ? (
+            <div className="flex-1 py-2.5 px-4 rounded-lg text-xs font-bold text-emerald-200 bg-emerald-950/80 border border-emerald-700 flex items-center justify-center gap-2">
+              <ShieldCheck size={16} className="text-emerald-400" /> Confirmed Verified Incident (Permanent Status)
+            </div>
+          ) : isRejected ? (
+            <div className="flex-1 py-2.5 px-4 rounded-lg text-xs font-bold text-rose-200 bg-rose-950/80 border border-rose-800 flex items-center justify-center gap-2">
+              <XCircle size={16} className="text-rose-400" /> False Alarm / Rejected
+            </div>
+          ) : isBlacklisted ? (
+            <div className="flex-1 py-2.5 px-4 rounded-lg text-xs font-bold text-slate-300 bg-slate-900 border border-slate-700 flex items-center justify-center gap-2">
+              <Ban size={16} className="text-red-400" /> Blacklisted Submitter Device
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  onAction(report.id, 'VERIFY', 'Verified and confirmed high-confidence by Authority')
+                  onClose()
+                }}
+                className="flex-1 min-w-[130px] py-2.5 px-4 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow transition-transform active:scale-95 bg-emerald-600 hover:bg-emerald-500"
+                title="Mark as Verified Hazard and broadcast to all units"
+              >
+                <ShieldCheck size={15} /> Approve & Verify
+              </button>
+              <button
+                onClick={() => {
+                  onAction(report.id, 'REJECT', 'Dismissed as false alarm by Officer')
+                  onClose()
+                }}
+                className="py-2.5 px-4 rounded-lg text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition-colors bg-rose-950/70 hover:bg-rose-900 border border-rose-800"
+                title="Mark as False Alarm / Non-Hazard"
+              >
+                <XCircle size={15} /> False Alarm / Reject
+              </button>
+              <button
+                onClick={() => {
+                  const note = prompt('Enter blacklisting reason (e.g. Adversarial spoofer / spam):', 'Adversarial prank alert')
+                  if (note !== null) {
+                    onAction(report.id, 'BLACKLIST', note)
+                    onClose()
+                  }
+                }}
+                className="py-2.5 px-3.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-red-950 border border-slate-700 hover:border-red-800 flex items-center justify-center gap-1.5 transition-colors"
+                title="Instant 24-Hour Blacklist submitter device & phone"
+              >
+                <Ban size={15} /> 24h Blacklist
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
   )
-}
+}

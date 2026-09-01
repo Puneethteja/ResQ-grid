@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { ShieldAlert, LogIn } from 'lucide-react'
 import { login } from '../lib/api.js'
 import { setSession } from '../lib/authoritySession.js'
-
 export default function AuthorityLogin() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
@@ -11,7 +10,6 @@ export default function AuthorityLogin() {
   const [error, setError] = useState(null)
   const [shake, setShake] = useState(false)
   const [loading, setLoading] = useState(false)
-
   async function handleSubmit(e) {
     e.preventDefault()
     const cleanUser = username.trim()
@@ -37,7 +35,6 @@ export default function AuthorityLogin() {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--ink)' }}>
       <form
@@ -52,7 +49,6 @@ export default function AuthorityLogin() {
           </span>
         </div>
         <h1 className="font-display text-xl text-white mb-6">Authority Command Room</h1>
-
         <div className="space-y-3">
           <div>
             <label className="font-mono text-[11px] tracking-widest uppercase block mb-1.5" style={{ color: 'var(--mist)' }}>
@@ -81,13 +77,11 @@ export default function AuthorityLogin() {
             />
           </div>
         </div>
-
         {error && (
           <p className="text-sm mt-3" style={{ color: 'var(--hazard)' }}>
             {error}
           </p>
         )}
-
         <button
           type="submit"
           disabled={loading}
@@ -97,7 +91,6 @@ export default function AuthorityLogin() {
           <LogIn size={16} />
           {loading ? 'Verifying credentials…' : 'Enter Command Room'}
         </button>
-
         <p className="text-xs mt-4 text-center" style={{ color: 'var(--mist)' }}>
           Authorized personnel only. All access attempts are logged.
         </p>

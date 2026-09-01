@@ -1,0 +1,58 @@
+[
+  {
+    "alert_id": "IMD-ALRT-2026-001",
+    "severity": "RED",
+    "title": "IMD Flash Flood & Inundation Warning",
+    "description": "Extremely heavy rainfall (200mm+) expected in low-lying coastal and drainage sectors. High risk of localized urban flash flooding and power outage.",
+    "affected_area": "Bhubaneswar Urban Corridor & Lowland Drainage Sectors",
+    "polygon": [
+      {
+        "lat": 20.27,
+        "lng": 85.8
+      },
+      {
+        "lat": 20.27,
+        "lng": 85.85
+      },
+      {
+        "lat": 20.32,
+        "lng": 85.85
+      },
+      {
+        "lat": 20.32,
+        "lng": 85.8
+      }
+    ],
+    "issued_at": "2026-09-01T19:04:17.235041+00:00",
+    "expires_at": "2026-09-02T19:04:17.235045+00:00",
+    "issued_by": "India Meteorological Department"
+  },
+  {
+    "alert_id": "IMD-ALRT-2026-002",
+    "severity": "ORANGE",
+    "title": "IMD Severe Thunderstorm & Gale Wind Advisory",
+    "description": "Squally winds reaching 65-75 kmph accompanied by lightning strikes across Bhubaneswar-Cuttack urban corridor. Avoid sheltering under trees or dilapidated roofs.",
+    "affected_area": "Khordha-Cuttack Metropolitan Region",
+    "polygon": [
+      {
+        "lat": 20.25,
+        "lng": 85.75
+      },
+      {
+        "lat": 20.25,
+        "lng": 85.9
+      },
+      {
+        "lat": 20.35,
+        "lng": 85.9
+      },
+      {
+        "lat": 20.35,
+        "lng": 85.75
+      }
+    ],
+    "issued_at": "2026-09-01T19:04:17.235065+00:00",
+    "expires_at": "2026-09-02T07:04:17.235068+00:00",
+    "issued_by": "India Meteorological Department"
+  }
+]

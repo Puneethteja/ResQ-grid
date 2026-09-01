@@ -12,6 +12,12 @@ from backend.test_features import (
     test_part3_feature8_cell_tower_anti_spoofing,
     test_part3_feature10_proximity_clustering_peer_consensus,
     test_part3_feature11_authority_audit_and_24h_blacklisting,
+    test_citizen_lightweight_authentication,
+    test_proximity_only_alerting_engine_and_imd_stream,
+    test_authority_emergency_contacts_directory,
+    test_dual_ip_intelligence_and_threat_mitigation,
+    test_phonenumbers_verification_and_nearest_authority_routing,
+    test_shelter_manager_authority_approval_gate,
 )
 
 tests = [
@@ -24,6 +30,12 @@ tests = [
     ("Feature 8: Telecom Handshake & Cell-Tower Anti-Spoofing", test_part3_feature8_cell_tower_anti_spoofing),
     ("Feature 10: Proximity Clustering & Peer-Mesh Consensus", test_part3_feature10_proximity_clustering_peer_consensus),
     ("Feature 11: Authority Audit Trail & 24h Instant Blacklisting", test_part3_feature11_authority_audit_and_24h_blacklisting),
+    ("Spec 2.1: Citizen Lightweight Authentication", test_citizen_lightweight_authentication),
+    ("Spec 2.1: Proximity-Only Alerting & IMD Warning Stream", test_proximity_only_alerting_engine_and_imd_stream),
+    ("Spec 2.1: Emergency Contacts Directory", test_authority_emergency_contacts_directory),
+    ("Spec 2.3: Dual IP Intelligence & Threat Mitigation", test_dual_ip_intelligence_and_threat_mitigation),
+    ("Spec 2.4: Phonenumbers Verification & Proximity WhatsApp Command Route", test_phonenumbers_verification_and_nearest_authority_routing),
+    ("Spec 2.5: Shelter Manager Authority Approval Gate & Lockout", test_shelter_manager_authority_approval_gate),
 ]
 
 passed = 0

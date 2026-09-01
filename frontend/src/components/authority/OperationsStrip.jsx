@@ -1,5 +1,4 @@
 import { Activity, ShieldCheck, Home, Radio, Ban, Sparkles } from 'lucide-react'
-
 const cards = [
   ['activeReports', 'Live Incidents', Activity, 'var(--signal)'],
   ['pendingReviewCount', 'Pending Photo Review', Sparkles, '#F59E0B'],
@@ -7,7 +6,6 @@ const cards = [
   ['activeMicroHavens', 'Active Havens', Home, '#38BDF8'],
   ['activeTeams', 'Ready Response Units', Radio, '#60A5FA'],
 ]
-
 export default function OperationsStrip({ overview }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-5 gap-px shrink-0" style={{ background: 'var(--ink-line)' }}>

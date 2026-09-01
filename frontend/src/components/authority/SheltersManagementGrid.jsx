@@ -13,18 +13,16 @@ import {
   XCircle,
   AlertTriangle,
   Camera,
+  Trash2,
 } from 'lucide-react'
-import { verifyShelter } from '../../lib/api.js'
-
+import { verifyShelter, deleteShelter } from '../../lib/api.js'
 export default function SheltersManagementGrid({ shelters = [], onDataChanged }) {
   const [filter, setFilter] = useState('ALL') 
   const [verifyingId, setVerifyingId] = useState(null)
   const [successMsg, setSuccessMsg] = useState(null)
-
   const pendingCount = shelters.filter(
     (s) => s.verificationStatus === 'PENDING_APPROVAL' || s.verificationStatus === 'REGISTERED' || s.verificationStatus === 'PENDING',
   ).length
-
   const list = shelters.filter((s) => {
     if (filter === 'PENDING') {
       return s.verificationStatus === 'PENDING_APPROVAL' || s.verificationStatus === 'REGISTERED' || s.verificationStatus === 'PENDING'
@@ -33,7 +31,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
     if (filter === 'TIER2') return s.tier === 2
     return true
   })
-
   async function handleVerify(shelterId, action) {
     setVerifyingId(shelterId)
     try {
@@ -48,10 +45,21 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
     }
   }
 
+  async function handleDelete(shelterId, e) {
+    e?.stopPropagation()
+    if (!window.confirm(`Are you sure you want to permanently delete shelter ${shelterId}?`)) return
+    try {
+      await deleteShelter(shelterId)
+      setSuccessMsg('Shelter facility permanently removed')
+      setTimeout(() => setSuccessMsg(null), 3000)
+      onDataChanged?.()
+    } catch (err) {
+      alert(err.message || 'Failed to delete shelter')
+    }
+  }
   const totalCap = shelters.reduce((acc, s) => acc + (s.maxCapacity || 0), 0)
   const currentOcc = shelters.reduce((acc, s) => acc + (s.currentOccupancy || 0), 0)
   const availCap = Math.max(0, totalCap - currentOcc)
-
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--ink)' }}>
       {}
@@ -63,7 +71,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
           <Check size={14} /> {successMsg}
         </div>
       )}
-
       {}
       <div
         className="p-5 flex flex-wrap items-center justify-between gap-4 shrink-0"
@@ -77,7 +84,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
             Authority approval hub, capacity monitoring, and infrastructure heartbeat supervisor.
           </p>
         </div>
-
         {}
         <div className="flex items-center gap-6 text-xs font-mono">
           {pendingCount > 0 && (
@@ -100,8 +106,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
           </div>
         </div>
       </div>
-
-      {/* Filter tabs */}
       <div className="px-5 py-2.5 flex items-center gap-2 text-xs shrink-0" style={{ background: 'rgba(0,0,0,0.15)', borderBottom: '1px solid var(--ink-line)' }}>
         {[
           ['ALL', `All Havens (${shelters.length})`],
@@ -123,7 +127,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
           </button>
         ))}
       </div>
-
       {}
       <div className="flex-1 overflow-y-auto p-5">
         {list.length === 0 ? (
@@ -143,7 +146,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
               const isFull = s.isFull || s.currentOccupancy >= s.maxCapacity || s.closed
               const pct = s.maxCapacity > 0 ? Math.min(100, Math.round((s.currentOccupancy / s.maxCapacity) * 100)) : 0
               const capColor = isFull ? 'var(--hazard)' : pct >= 75 ? 'var(--caution)' : 'var(--safe)'
-
               return (
                 <div
                   key={shelterId}
@@ -154,7 +156,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                   }}
                 >
                   <div>
-                    {/* Top line with Tier & Verification */}
                     <div className="flex items-center justify-between gap-2">
                       <span
                         className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase text-white"
@@ -177,19 +178,25 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                         {isVerified ? '✓ VERIFIED' : isRejected ? '✕ REJECTED' : '⧗ PENDING APPROVAL'}
                       </span>
                     </div>
-
-                    <h3 className="font-display text-base font-semibold text-white mt-2.5 leading-snug">
-                      {s.name}
-                    </h3>
-
+                    <div className="flex items-start justify-between gap-2 mt-2.5">
+                      <h3 className="font-display text-base font-semibold text-white leading-snug">
+                        {s.name}
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={(e) => handleDelete(shelterId, e)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors shrink-0 cursor-pointer"
+                        title="Delete Shelter Facility"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                     {s.coordinates && (
                       <div className="flex items-center gap-1.5 text-xs font-mono mt-1" style={{ color: 'var(--mist)' }}>
                         <MapPin size={12} style={{ color: 'var(--signal)' }} />
                         {s.coordinates.lat.toFixed(4)}° N, {s.coordinates.lng.toFixed(4)}° E
                       </div>
                     )}
-
-                    {/* Photo Preview if attached */}
                     {s.verificationPhoto ? (
                       <div className="mt-3 aspect-video rounded-lg overflow-hidden border border-slate-700">
                         <img src={s.verificationPhoto} alt={s.name} className="w-full h-full object-cover" />
@@ -199,8 +206,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                         <Camera size={11} /> No verification image attached
                       </div>
                     )}
-
-                    {/* Occupancy progress bar */}
                     <div className="mt-4 space-y-1.5">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-slate-300 flex items-center gap-1">
@@ -214,8 +219,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                         <div className="h-full rounded-full transition-all" style={{ width: `${s.closed ? 100 : pct}%`, background: capColor }} />
                       </div>
                     </div>
-
-                    {/* Infrastructure Vitals */}
                     <div className="mt-4 pt-3 grid grid-cols-3 gap-2 border-t" style={{ borderColor: 'var(--ink-line)' }}>
                       <div className="p-2 rounded-lg text-center" style={{ background: 'var(--ink)' }}>
                         <Zap size={13} className="mx-auto mb-0.5" style={{ color: s.powerStatus === 'ACTIVE' ? 'var(--safe)' : 'var(--hazard)' }} />
@@ -233,14 +236,12 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                         <span className="text-[9px] font-mono text-slate-400">{s.medicalStatus || 'ACTIVE'}</span>
                       </div>
                     </div>
-
                     {s.notes && (
                       <p className="mt-2.5 text-xs text-slate-400 italic">
                         "{s.notes}"
                       </p>
                     )}
                   </div>
-
                   {}
                   <div className="pt-3 border-t space-y-2" style={{ borderColor: 'var(--ink-line)' }}>
                     <div className="flex items-center justify-between text-[11px] font-mono" style={{ color: 'var(--mist)' }}>
@@ -249,7 +250,6 @@ export default function SheltersManagementGrid({ shelters = [], onDataChanged })
                         {s.heartbeatTimestamp ? `Ping ${new Date(s.heartbeatTimestamp).toLocaleTimeString()}` : 'Live Node'}
                       </span>
                     </div>
-
                     {!isVerified && (
                       <div className="flex gap-2 pt-1">
                         <button

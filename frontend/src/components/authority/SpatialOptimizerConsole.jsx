@@ -13,13 +13,11 @@ import {
   Users,
 } from 'lucide-react'
 import { fetchOptimizerPlan, batchDispatchOptimizer } from '../../lib/api.js'
-
 export default function SpatialOptimizerConsole({ onDataChanged }) {
   const [plan, setPlan] = useState(null)
   const [loading, setLoading] = useState(true)
   const [executing, setExecuting] = useState(false)
   const [successToast, setSuccessToast] = useState(null)
-
   const loadPlan = useCallback(async () => {
     setLoading(true)
     try {
@@ -30,13 +28,11 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
       setLoading(false)
     }
   }, [])
-
   useEffect(() => {
     loadPlan()
     const timer = setInterval(loadPlan, 6000)
     return () => clearInterval(timer)
   }, [loadPlan])
-
   async function handleBatchDispatch() {
     if (!plan?.recommendations?.length) return
     setExecuting(true)
@@ -56,9 +52,7 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
       setExecuting(false)
     }
   }
-
   const recs = plan?.recommendations || []
-
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--ink)' }}>
       {}
@@ -70,7 +64,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
           <CheckCircle2 size={16} /> {successToast}
         </div>
       )}
-
       {}
       <div
         className="p-5 flex flex-wrap items-center justify-between gap-4 shrink-0"
@@ -84,7 +77,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
             Spatial distance matrix solver pairing crisis density zones with specialized extraction assets & open shelters.
           </p>
         </div>
-
         <div className="flex items-center gap-3">
           {recs.length > 0 && (
             <button
@@ -96,7 +88,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
               <Send size={13} /> {executing ? 'Executing Dispatch…' : `1-Click Batch Dispatch (${recs.length} Units)`}
             </button>
           )}
-
           <button
             onClick={loadPlan}
             className="p-2 rounded-lg text-slate-300 hover:text-white"
@@ -107,7 +98,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
           </button>
         </div>
       </div>
-
       {}
       <div
         className="px-5 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono shrink-0"
@@ -130,8 +120,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
           <span className="text-sm font-bold text-sky-400">{recs.length} Solutions</span>
         </div>
       </div>
-
-      {/* Main Allocations Matrix */}
       <div className="flex-1 overflow-y-auto p-5">
         {recs.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-center space-y-2">
@@ -146,7 +134,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
             <h3 className="font-display text-sm font-semibold text-white flex items-center gap-2">
               <Sparkles size={15} className="text-amber-400" /> Automated Optimization Pairings (Distance & Capability Matched)
             </h3>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {recs.map((rec) => (
                 <div
@@ -176,8 +163,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
                       </div>
                     </div>
                   </div>
-
-                  {/* Paired Asset & Target Shelter */}
                   <div className="grid grid-cols-2 gap-3 pt-2 border-t" style={{ borderColor: 'var(--ink-line)' }}>
                     <div className="p-2.5 rounded-lg bg-black/40 space-y-1">
                       <span className="text-[10px] font-mono uppercase text-emerald-400 flex items-center gap-1">
@@ -189,7 +174,6 @@ export default function SpatialOptimizerConsole({ onDataChanged }) {
                         <span className="text-emerald-400 font-bold">ETA ~{rec.etaMinutes} min</span>
                       </div>
                     </div>
-
                     <div className="p-2.5 rounded-lg bg-black/40 space-y-1">
                       <span className="text-[10px] font-mono uppercase text-sky-400 flex items-center gap-1">
                         <Building2 size={12} /> Evacuation Destination

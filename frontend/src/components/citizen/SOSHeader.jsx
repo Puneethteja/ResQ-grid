@@ -1,9 +1,9 @@
 import { ShieldCheck, TriangleAlert, Wifi, WifiOff } from 'lucide-react'
-
-
+import ThemeLanguageBar from '../common/ThemeLanguageBar.jsx'
+import { useApp } from '../../context/AppContext.jsx'
 export default function SOSHeader({ status, nearestHazardKm, online }) {
   const isHazard = status === 'hazard'
-
+  const { t } = useApp()
   return (
     <header
       className="relative overflow-hidden px-5 pt-6 pb-8 sm:px-8"
@@ -13,19 +13,21 @@ export default function SOSHeader({ status, nearestHazardKm, online }) {
           : 'linear-gradient(180deg, var(--safe-dim), var(--ink))',
       }}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="ResQ-Grid Logo" className="w-6 h-6 rounded-md object-contain bg-slate-900 border border-slate-700" />
           <div className="font-mono text-[11px] tracking-widest uppercase text-white font-semibold">
-            Citizen Safety Console
+            {t('app_title')} · Citizen Console
           </div>
         </div>
-        <div className="flex items-center gap-1.5 font-mono text-[11px]" style={{ color: 'var(--mist)' }}>
-          {online ? <Wifi size={13} /> : <WifiOff size={13} />}
-          {online ? 'Connected' : 'Offline'}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-white/80">
+            {online ? <Wifi size={13} className="text-emerald-400" /> : <WifiOff size={13} className="text-amber-400" />}
+            {online ? 'Connected' : 'Offline'}
+          </div>
+          <ThemeLanguageBar compact={true} />
         </div>
       </div>
-
       <div className="flex items-center gap-4 mt-6">
         <div className="relative w-14 h-14 shrink-0 flex items-center justify-center">
           <div
