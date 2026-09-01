@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+frontend/node_modules/
 .pnp
 .pnp.js
 
@@ -7,6 +8,7 @@ node_modules/
 frontend/dist/
 dist/
 build/
+*.tsbuildinfo
 
 # Python artifacts
 __pycache__/
@@ -19,6 +21,15 @@ env/
 venv/
 ENV/
 .venv/
+.pytest_cache/
+
+# Runtime Database & JSON Data Stores
+backend/data/*.json
+backend/data/
+*.json.bak
+*.db
+*.sqlite
+*.sqlite3
 
 # IDE and OS files
 .vscode/
